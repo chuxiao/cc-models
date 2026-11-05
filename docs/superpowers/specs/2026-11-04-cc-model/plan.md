@@ -199,6 +199,7 @@ flowchart LR
 
 **Files:**
 - Create: `Sources/ccmodel/Main.swift`、`Sources/ccmodel/AppDelegate.swift`、`Sources/ccmodel/StatusItemController.swift`、`Sources/ccmodel/ModelSwitcher.swift`、`Sources/ccmodel/Notifier.swift`
+- Delete: `Sources/ccmodel/AppEntry.swift`（Task 1 的构建占位 `@main struct AppEntry`——Main.swift 落地后必须删除，否则双 `@main` 链接失败）
 - Test: `Tests/ccmodelTests/ModelSwitcherTests.swift`
 
 **流程图：**
@@ -450,3 +451,5 @@ flowchart TD
 **复读第二轮核对结论：** 上述 9 项处置已全部落实，无新问题残留（本附录即第 6 项「处置落盘」的落实）。
 
 **实施裁定（2026-11-05）：** Task 1 实施中实测 CLT（Swift 6.4.2）不随附 XCTest 测试 API（仅 swift-testing）。裁定测试框架改用 swift-testing（import Testing / @Test / #expect）——随工具链分发，非第三方依赖，「零依赖」约束意图不变；Tasks 2–9 测试同口径。该环境事实修正不改行为与范围。
+
+**实施裁定 2（2026-11-05）：** 实测本机工具链下 executableTarget + 多源文件 + 无入口点不可链接。裁定 Task 1 增加 `Sources/ccmodel/AppEntry.swift` 构建占位（`@main struct AppEntry { static func main() {} }`）；Task 5 创建 Main.swift 时删除该占位（已回写 Task 5 Files）。
