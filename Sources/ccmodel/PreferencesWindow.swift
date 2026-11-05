@@ -43,7 +43,7 @@ private struct PreferencesRoot: View {
 
     private var sidebar: some View {
         VStack(spacing: 0) {
-            List(selection: $viewModel.selectedID) {
+            List(selection: selectedIDBinding) {
                 ForEach(viewModel.modelList) { model in
                     row(for: model)
                         .tag(model.id)
@@ -112,6 +112,19 @@ private struct PreferencesRoot: View {
     }
 
     // MARK: - 绑定（禁 @State，绑定一律由 ViewModel 派生）
+
+    /// 侧栏选择：经 `select(id:)` 派生——选中变更必须走 VM 才会同步载入目标模型
+    /// 表单（loadForm），直接写 @Published selectedID 会让详情停留在旧模型表单，
+    /// 保存即污染错误记录。List 反选回写 nil 时忽略，保持当前选中。
+    private var selectedIDBinding: Binding<UUID?> {
+        Binding(
+            get: { viewModel.selectedID },
+            set: { newValue in
+                guard let id = newValue else { return }
+                viewModel.select(id: id)
+            }
+        )
+    }
 
     private var launchAtLoginBinding: Binding<Bool> {
         Binding(

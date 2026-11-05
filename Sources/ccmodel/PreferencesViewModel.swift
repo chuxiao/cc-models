@@ -94,8 +94,7 @@ final class PreferencesViewModel: ObservableObject {
         do {
             try store.save()
         } catch {
-            try? store.load()
-            reload()
+            rollbackAndReload()
             throw error
         }
         reload()
@@ -162,8 +161,7 @@ final class PreferencesViewModel: ObservableObject {
             }
             try store.save()
         } catch {
-            try? store.load()
-            reload()
+            rollbackAndReload()
             throw error
         }
         selectedID = profile.id
@@ -199,10 +197,15 @@ final class PreferencesViewModel: ObservableObject {
             }
             try store.save()
         } catch {
-            try? store.load()
-            reload()
+            rollbackAndReload()
             throw error
         }
+        reload()
+    }
+
+    /// 落盘失败回滚：内存态恢复到最近持久事实并重新同步视图状态。
+    private func rollbackAndReload() {
+        try? store.load()
         reload()
     }
 
