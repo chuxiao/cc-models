@@ -28,7 +28,7 @@
 |---|------|------|
 | 1 | env 中全部 ANTHROPIC_* 键组与 DeepSeek 模型保存值完全一致 | §2 F2 |
 | 2 | `DISABLE_AUTOUPDATER` 等非前缀键、`enabledPlugins` 等顶层字段原值保留 | §2 F2 |
-| 3 | 系统通知文案逐字「已切换到 DeepSeek，对新建会话生效」 | §2 F2 |
+| 3 | 系统通知文案逐字符合模板「已切换到〈name〉，对新建会话生效」，本场景 name=DeepSeek（紧邻无空格，与实现 Notifier 文案逐字比对） | §2 F2 |
 | 4 | 重开菜单：DeepSeek 置顶带勾选；智谱不在首位 | §2 F1 |
 | 5 | 状态项标题变为「⇄ DeepSeek」 | §2 F1 |
 - 清理：恢复备份的 settings.json。
