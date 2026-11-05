@@ -401,7 +401,7 @@ flowchart TD
 ## 4. 约束
 
 - **状态管理红线：** SwiftUI 只用已实测路径——`ObservableObject`+`@Published`+`@ObservedObject` 或 `@Observable`；禁用 `@State` 及其他依赖 SwiftUIMacros 插件的包装器（CLT 环境无该插件，2026-11-04 实测）。
-- **零依赖：** 不引入任何第三方包；仅系统框架 Foundation/AppKit/SwiftUI/UserNotifications/ServiceManagement 与 XCTest。
+- **零依赖：** 不引入任何第三方包；仅系统框架 Foundation/AppKit/SwiftUI/UserNotifications/ServiceManagement；测试框架用 swift-testing（CLT 环境实测不含 XCTest API，2026-11-05 实施裁定——swift-testing 随工具链分发，非第三方依赖）。
 - **真实配置保护：** 单元测试一律注入临时目录，禁止读写真实 `~/.claude/settings.json` 与真实应用配置目录；集成验证操作真实文件前必须备份、结束必须恢复（见 verification.md）。
 - **失败不变性：** settings.json 任何写失败路径下原文件字节不变。
 - **平台：** macOS 13+ API 下限，arm64；主线程单队列，不加锁。
@@ -448,3 +448,5 @@ flowchart TD
 - 复读核对：13 项处置中 12 项落实判定通过；机械清点（三文档表格列数、围栏配对、mermaid）通过。
 
 **复读第二轮核对结论：** 上述 9 项处置已全部落实，无新问题残留（本附录即第 6 项「处置落盘」的落实）。
+
+**实施裁定（2026-11-05）：** Task 1 实施中实测 CLT（Swift 6.4.2）不随附 XCTest 测试 API（仅 swift-testing）。裁定测试框架改用 swift-testing（import Testing / @Test / #expect）——随工具链分发，非第三方依赖，「零依赖」约束意图不变；Tasks 2–9 测试同口径。该环境事实修正不改行为与范围。
