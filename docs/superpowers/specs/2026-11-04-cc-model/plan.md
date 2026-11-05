@@ -185,7 +185,7 @@ flowchart LR
 **边界条件：**
 - 匹配：env 先经 `capture` 过滤；键集合与某模型 env 完全相等且逐键值相等 → 返回该 id；否则 nil；空 env → nil。
 - 菜单顺序：currentID 非空时该项排第 1 且 isSelected=true；其余按 `ModelSort.ordered`（lastSelectedAt 降序、nil 保持添加顺序）；showsCustomConfig=true 时 customConfig 项排最前，title 逐字「自定义配置」，isEnabled=false，且此时所有模型项 isSelected=false。
-- 〔待需求方确认〕状态项图标形态：建议以文本字符「⇄ 」前缀呈现（视觉稿中为示意符号）；如需 SF Symbol 图形图标属实现调整，非行为变化。
+- 状态项图标形态（已裁决，2026-11-05）：以文本字符「⇄ 」前缀呈现。
 - 标注与固定项：defaultID 对应项 title 追加逐字「（默认）」（含它是 current 时）；模型组与偏好设置之间恰一个 separator；preferences title 逐字「偏好设置…」isEnabled=true；quit title 逐字「退出 CC Model」。
 - 退化输入：models 为空且 showsCustomConfig=true → `[customConfig, separator, preferences, quit]`；models 为空且 showsCustomConfig=false → `[separator, preferences, quit]`。
 
@@ -233,9 +233,9 @@ flowchart TD
 - `currentModelID`：`readEnv` + `match`；readEnv 抛错 → 返回 nil。
 - 状态项：title 用 `statusItemTitle(当前模型显示名)`；切换成功后立即刷新；应用无 Dock 图标。
 - 菜单：`menuNeedsUpdate` 内重新读 env 并以 `MenuBuilder.buildItems` 重建全部条目；点击 model 项 → `switchTo`；preferences/quit 分别打开偏好窗口占位（Task 7 前为空操作）与 `NSApp.terminate`。
-- 自定义配置触发：menuDidClose 时若「未命中且 !store.isDismissedEnv(env)」→ 以当前 env 调 onCustomConfigDetected 恰一次； dismissed 后同 env 不再触发。dismissed 判定采用**内容等价口径**（同 env 不再询问；〔待需求方确认〕，覆盖「拒绝 A → 换 B → 回到 A」场景）。
+- 自定义配置触发：menuDidClose 时若「未命中且 !store.isDismissedEnv(env)」→ 以当前 env 调 onCustomConfigDetected 恰一次； dismissed 后同 env 不再触发。dismissed 判定采用**内容等价口径**（已裁决，2026-11-05：同 env 不再询问，覆盖「拒绝 A → 换 B → 回到 A」场景）。
 - readEnv 失败：menuNeedsUpdate 中 readEnv 抛错（settings.json 损坏）→ 菜单照常构建，customConfig 置灰项显示，但 onCustomConfigDetected **不回调**（无法获得 env）；状态项标题显示「⇄ —」。
-- 〔待需求方裁决〕应用配置损坏的进程行为：`store.load()` 抛错时——建议弹说明窗（含配置文件路径）后退出应用，**绝不静默按空配置进入首跑**（避免无提示丢失全部模型档案）。
+- 应用配置损坏的进程行为（已裁决，2026-11-05）：`store.load()` 抛错时弹说明窗——含配置文件路径与解决建议（修复该文件的 JSON 语法，或删除该文件后重启应用、重新走首次配置）——用户确认后退出应用；**绝不静默按空配置进入首跑**。
 - 通知：首次 post 前请求授权恰一次；被拒 → 后续不再请求、不发通知、不报错。授权请求路径不可注入，无单测断言，由 verification.md S11 人工核对。
 
 **验收标准（单测覆盖可测件；NSStatusItem/NSMenu 装配由 verification.md S1/S3 人工核对）：**
@@ -435,7 +435,7 @@ flowchart TD
 **首轮审读处置：**
 
 - 映射表：F1–F7 均有任务承接（F3、F5 部分覆盖，经修订补齐）；「明确不做」七条无任务越界。
-- 归需求方 4 项 → 文中以〔待需求方裁决/确认〕占位：①应用配置损坏的进程行为（T5）②S6 临时配置目录机制（verification S6）③状态项图标形态（T4）④dismissed 判定口径（T5）。呈报需求方后按裁决回写。
+- 归需求方 4 项 → 已于 2026-11-05 全部裁决并回写正文：①配置损坏弹说明窗（含解决建议：修复 JSON 或删除文件重走首跑）后退出，不静默进首跑；②S6 采用环境变量 `CC_MODEL_CONFIG_DIR` 指向临时配置目录；③状态项图标以文本「⇄ 」前缀；④dismissed 采用内容等价口径。
 - 次要 11 项 → 全部修订：`ModelSort.ordered` 唯一排序实现；T3 原子替换 + 写失败验收；validate 名单排自身；T8 弹窗循环行为与 lastSelectedAt 修正；readEnv 失败链兜底；token 明/密切换承接；T9 提示输出与验收补齐；实施顺序声明；launchAtLogin 初始值取 store；风险表措辞修正。
 - 已有答案 12 项 → extras 零交集重定义（高危项）；S7/S8 补备份恢复；新增 S15 新会话场景；出处与体例修正；S12 条件式措辞。未采纳 2 项：设计 §5 成本上限不作为可验收判据（估计值属计划元数据）；设计「留给构建者的部分」H4 标题为模板规定结构，不调整。
 - 可读性 6 项 → 随上述修订消解；排版逐行清点（表格列数、围栏配对、mermaid、标题、嵌套）通过。
