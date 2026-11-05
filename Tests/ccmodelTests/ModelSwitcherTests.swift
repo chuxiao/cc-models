@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import Testing
 @testable import ccmodel
@@ -234,5 +235,78 @@ struct ModelSwitcherTests {
             "已切换到智谱，对新建会话生效",
             "切换到DeepSeek失败，已保留原配置",
         ])
+    }
+
+    // MARK: - menuDidClose 自定义配置触发时序
+
+    /// 回调与延后判定的 spy（引用语义，可被逃逸闭包捕获）。
+    private final class MenuCloseSpy {
+        var callbacks: [[String: String]] = []
+        var pendingEvaluations: [() -> Void] = []
+    }
+
+    /// 搭建带回调 spy 与「延后执行暂存」缝的控制器；测试手动推进延后的判定。
+    private func makeController(
+        store: ModelStore,
+        switcher: ModelSwitcher,
+        spy: MenuCloseSpy
+    ) -> StatusItemController {
+        let controller = StatusItemController(
+            store: store,
+            switcher: switcher,
+            onCustomConfigDetected: { spy.callbacks.append($0) }
+        )
+        controller.deferMenuCloseEvaluation = { spy.pendingEvaluations.append($0) }
+        return controller
+    }
+
+    @Test func menuDidCloseDefersEvaluationAndSkipsCallbackAfterPendingSwitchLands() throws {
+        try withTemporaryDirectory { dir in
+            let settingsDir = dir.appendingPathComponent("claude")
+            let (store, _, switcher, _) = makeComponents(
+                storeDirectory: dir.appendingPathComponent("store"),
+                settingsDirectory: settingsDir
+            )
+            let zhipu = profile("智谱", env: zhipuEnv)
+            store.add(zhipu)
+            try writeSettings(settingsDir, #"{"env": {"ANTHROPIC_BASE_URL": "https://unmatched"}}"#)
+
+            let spy = MenuCloseSpy()
+            let controller = makeController(store: store, switcher: switcher, spy: spy)
+
+            // 关菜单：判定被延后一轮，此刻不回调
+            controller.menuDidClose(NSMenu())
+            #expect(spy.callbacks.isEmpty)
+            #expect(spy.pendingEvaluations.count == 1)
+
+            // 菜单跟踪期内的条目 action（点击模型项 → switchTo）先于延后判定落地
+            try switcher.switchTo(id: zhipu.id)
+
+            // 延后一轮执行判定：env 已命中 → 不回调
+            for evaluate in spy.pendingEvaluations { evaluate() }
+            #expect(spy.callbacks.isEmpty)
+        }
+    }
+
+    @Test func menuDidCloseTriggersCallbackOnceWhenEnvStillUnmatchedAfterDeferredEvaluation() throws {
+        try withTemporaryDirectory { dir in
+            let settingsDir = dir.appendingPathComponent("claude")
+            let (store, _, switcher, _) = makeComponents(
+                storeDirectory: dir.appendingPathComponent("store"),
+                settingsDirectory: settingsDir
+            )
+            store.add(profile("智谱", env: zhipuEnv))
+            let unmatchedEnv = ["ANTHROPIC_BASE_URL": "https://unmatched"]
+            try writeSettings(settingsDir, #"{"env": {"ANTHROPIC_BASE_URL": "https://unmatched"}}"#)
+
+            let spy = MenuCloseSpy()
+            let controller = makeController(store: store, switcher: switcher, spy: spy)
+
+            controller.menuDidClose(NSMenu())
+            #expect(spy.callbacks.isEmpty)
+
+            for evaluate in spy.pendingEvaluations { evaluate() }
+            #expect(spy.callbacks == [unmatchedEnv])
+        }
     }
 }

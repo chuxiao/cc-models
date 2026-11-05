@@ -15,6 +15,12 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let menu = NSMenu()
     private var statusItem: NSStatusItem?
 
+    /// menuDidClose 判定的延后执行器：默认派发到 main queue 下一轮，保证菜单
+    /// 跟踪期内的条目 action（点击切换）先落地；测试注入同步暂存以确定性断言。
+    var deferMenuCloseEvaluation: (@escaping () -> Void) -> Void = { body in
+        DispatchQueue.main.async(execute: body)
+    }
+
     init(
         store: ModelStore,
         switcher: ModelSwitcher,
@@ -107,14 +113,18 @@ final class StatusItemController: NSObject, NSMenuDelegate {
 
     // MARK: - 自定义配置触发
 
-    /// 菜单关闭：若关闭时刻 env 未命中任何模型且未被忽略 → 以当前 env 回调恰一次。
-    /// 以关闭时刻重新读取的 env 判定（菜单打开期间用户可能已点击模型项完成切换）；
-    /// readEnv 抛错（settings.json 损坏，无法获得 env）→ 不回调。
+    /// 菜单关闭：延后一轮再判定「env 未命中且未被忽略」→ 以该 env 回调恰一次。
+    /// AppKit 未文档化条目 action 与 menuDidClose 的派发顺序；延后一轮使菜单
+    /// 跟踪期内点击模型项触发的 switchTo 先落地，此后读到的 env 才是关菜单后
+    /// 的真实状态，任何派发顺序下均正确。readEnv 抛错（无法获得 env）→ 不回调。
     func menuDidClose(_ menu: NSMenu) {
-        guard let env = switcher.currentEnv() else { return }
-        guard CurrentModelDetector.match(env: env, in: store.configuration.models) == nil else { return }
-        guard !store.isDismissedEnv(env) else { return }
-        onCustomConfigDetected(env)
+        deferMenuCloseEvaluation { [weak self] in
+            guard let self else { return }
+            guard let env = self.switcher.currentEnv() else { return }
+            guard CurrentModelDetector.match(env: env, in: self.store.configuration.models) == nil else { return }
+            guard !self.store.isDismissedEnv(env) else { return }
+            self.onCustomConfigDetected(env)
+        }
     }
 }
 
