@@ -141,6 +141,19 @@ final class ModelStore {
         ModelSort.ordered(configuration.models)
     }
 
+    // MARK: - 开机自启
+
+    /// 开机自启持久事实（Task 7 PreferencesViewModel 的开关初值来源，
+    /// 不读 LoginItem.isEnabled——控制者裁定）。文件缺失时为 false。
+    var launchAtLogin: Bool { configuration.launchAtLogin }
+
+    /// 写开机自启持久事实（只改内存，由调用方 save 持久化，同 markSelected 约定）。
+    /// Task 7 简报要求「store.launchAtLogin 持久化」而 Task 2 未暴露该读写，
+    /// 此为最小 API 扩展（仅新增，不改既有行为），已申报控制者。
+    func setLaunchAtLogin(_ on: Bool) {
+        configuration.launchAtLogin = on
+    }
+
     private func indexOfModel(_ id: UUID) -> Int? {
         configuration.models.firstIndex { $0.id == id }
     }

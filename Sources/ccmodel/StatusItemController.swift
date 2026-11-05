@@ -11,6 +11,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     private let store: ModelStore
     private let switcher: ModelSwitcher
     private let onCustomConfigDetected: ([String: String]) -> Void
+    /// 偏好设置动作（Task 7 起由装配层注入真窗口呈现；默认空操作，
+    /// 使 Task 5 既有调用点与测试无需改动）。
+    private let onPreferences: () -> Void
 
     private let menu = NSMenu()
     private var statusItem: NSStatusItem?
@@ -24,11 +27,13 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     init(
         store: ModelStore,
         switcher: ModelSwitcher,
-        onCustomConfigDetected: @escaping ([String: String]) -> Void
+        onCustomConfigDetected: @escaping ([String: String]) -> Void,
+        onPreferences: @escaping () -> Void = {}
     ) {
         self.store = store
         self.switcher = switcher
         self.onCustomConfigDetected = onCustomConfigDetected
+        self.onPreferences = onPreferences
         super.init()
     }
 
@@ -100,16 +105,13 @@ final class StatusItemController: NSObject, NSMenuDelegate {
                 // 失败通知已由 ModelSwitcher 发出；settings 与存储未变，标题无需刷新。
             }
         case .preferences:
-            openPreferencesPlaceholder()
+            onPreferences()
         case .quit:
             NSApp.terminate(sender)
         case .customConfig, .separator:
             break // 置灰项与非交互项，不可达
         }
     }
-
-    /// 偏好窗口占位：Task 7 接线真窗口；此前点击无动作。
-    private func openPreferencesPlaceholder() {}
 
     // MARK: - 自定义配置触发
 

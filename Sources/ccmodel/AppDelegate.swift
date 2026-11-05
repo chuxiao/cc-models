@@ -11,6 +11,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private lazy var switcher = ModelSwitcher(store: store, writer: SettingsWriter(), notifier: notifier)
     private var statusItemController: StatusItemController?
     private var firstRunCoordinator: FirstRunCoordinator?
+    /// 偏好窗口与模型（Task 7）：菜单「偏好设置…」打开；已存在时 reload + 前置复用，
+    /// 不重复开窗。
+    private var preferencesWindow: PreferencesWindow?
+    private var preferencesViewModel: PreferencesViewModel?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         do {
@@ -40,11 +44,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             store: store,
             switcher: switcher,
             // Task 5 内为空实现占位；Task 8 注入自定义配置弹窗。
-            onCustomConfigDetected: { _ in }
+            onCustomConfigDetected: { _ in },
+            // Task 7：菜单「偏好设置…」打开偏好窗口（原空操作占位接线真窗口）。
+            onPreferences: { [weak self] in self?.showPreferences() }
         )
         controller.start()
         statusItemController = controller
         firstRunCoordinator = nil
+    }
+
+    // MARK: - 偏好窗口
+
+    /// 打开偏好窗口；已存在时从 store 重新同步（reload）并前置复用同一窗口。
+    private func showPreferences() {
+        NSApp.activate(ignoringOtherApps: true)
+        if let window = preferencesWindow {
+            preferencesViewModel?.reload()
+            window.makeKeyAndOrderFront(nil)
+            return
+        }
+        let viewModel = PreferencesViewModel(store: store, switcher: switcher)
+        let window = PreferencesWindow(viewModel: viewModel)
+        preferencesViewModel = viewModel
+        preferencesWindow = window
+        window.makeKeyAndOrderFront(nil)
     }
 
     // MARK: - 配置目录解析
