@@ -43,14 +43,30 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let controller = StatusItemController(
             store: store,
             switcher: switcher,
-            // Task 5 内为空实现占位；Task 8 注入自定义配置弹窗。
-            onCustomConfigDetected: { _ in },
+            // Task 8：自定义配置导入弹窗（呈现时机由 StatusItemController 保证在
+            // menuDidClose 后，见 presentImportDialog）。
+            onCustomConfigDetected: { [weak self] env in self?.presentImportDialog(env: env) },
             // Task 7：菜单「偏好设置…」打开偏好窗口（原空操作占位接线真窗口）。
             onPreferences: { [weak self] in self?.showPreferences() }
         )
         controller.start()
         statusItemController = controller
         firstRunCoordinator = nil
+    }
+
+    // MARK: - 自定义配置导入
+
+    /// 自定义配置导入弹窗（Task 8）：menuDidClose 的延后判定回调 → 三出口决策
+    /// 经 `ImportCoordinator.decide` 落库（纳入/覆盖经 switchTo 成为当前，取消记录
+    /// 已忽略 env）。落库抛错（空 env 兜底、写失败）不在此叠加错误弹窗：内存态已由
+    /// decide 回滚到磁盘基线、settings 字节不变，该 env 未记录 dismissed，下次菜单
+    /// 关闭会再次询问（自愈）。
+    private func presentImportDialog(env: [String: String]) {
+        let dialog = ImportDialog(models: store.menuOrderedModels()) { [weak self] decision in
+            guard let self else { return }
+            try? ImportCoordinator.decide(decision, env: env, store: self.store, switcher: self.switcher)
+        }
+        dialog.present()
     }
 
     // MARK: - 偏好窗口
