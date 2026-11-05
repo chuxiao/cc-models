@@ -4,7 +4,7 @@ import Foundation
 /// 是切换、覆盖、编辑应用、首跑四条链路的唯一写入点。
 ///
 /// 失败不变性是生命线：任何抛错路径下，settings.json 的字节内容与调用前完全一致。
-/// 写入采用「同目录临时文件 → 设权限 → POSIX rename 原子替换」，
+/// 写入采用「0600 临时文件 → POSIX rename 原子替换」：临时文件从诞生起就是 0600，
 /// 所有可抛错步骤都发生在替换之前，rename 失败时原文件不动。
 struct SettingsWriter {
 
@@ -70,24 +70,33 @@ struct SettingsWriter {
 
     // MARK: - 写入（失败不变性）
 
-    /// 同目录临时文件 + rename 原子替换。临时文件写入与权限设置先于 rename，
-    /// 任一失败即抛错并清理临时文件，原文件字节不变。
+    /// 同目录临时文件 + rename 原子替换。目录无条件收紧到 0700；临时文件以
+    /// 0600 诞生（先建空文件再截断写入，无「先 0644 后 chmod」的凭据暴露窗口）；
+    /// rename 之外的一切可抛错步骤先于替换，任一失败即抛错并清理临时文件，
+    /// 原文件字节不变。
     private func writeAtomically(_ data: Data) throws {
         try FileManager.default.createDirectory(
             at: directory,
             withIntermediateDirectories: true,
             attributes: [.posixPermissions: 0o700]
         )
+        try FileManager.default.setAttributes(
+            [.posixPermissions: 0o700],
+            ofItemAtPath: directory.path
+        )
         let temporaryURL = directory.appendingPathComponent(
             ".settings.json.tmp-\(UUID().uuidString)", isDirectory: false
         )
         defer { try? FileManager.default.removeItem(at: temporaryURL) }
 
+        guard FileManager.default.createFile(
+            atPath: temporaryURL.path,
+            contents: nil,
+            attributes: [.posixPermissions: 0o600]
+        ) else {
+            throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO)
+        }
         try data.write(to: temporaryURL)
-        try FileManager.default.setAttributes(
-            [.posixPermissions: 0o600],
-            ofItemAtPath: temporaryURL.path
-        )
         guard rename(temporaryURL.path, settingsURL.path) == 0 else {
             throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO)
         }

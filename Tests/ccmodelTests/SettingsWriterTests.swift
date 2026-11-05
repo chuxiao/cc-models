@@ -183,9 +183,10 @@ struct SettingsWriterTests {
         }
     }
 
-    // MARK: - 失败不变性：写失败
+    // MARK: - 失败不变性：异常目标与写失败
 
-    /// 构造一：settings.json 被同名目录占位 → 抛错，目标保持目录原样不被破坏。
+    /// 构造一：settings.json 被同名目录占位 → 读取阶段即抛错（Data(contentsOf:) 对目录失败），
+    /// 目标保持目录原样不被破坏。写路径失败由构造二覆盖。
     @Test func replaceWhenSettingsFileIsADirectoryThrowsAndKeepsTargetIntact() throws {
         try withTemporaryDirectory { dir in
             let writer = SettingsWriter(directory: dir)
@@ -201,26 +202,46 @@ struct SettingsWriterTests {
         }
     }
 
-    /// 构造二：settings.json 存在但所在目录无写权限（0555）→ 创建临时文件失败 →
-    /// 抛错且原文件字节与调用前完全一致（解析成功、写入失败的完整链路）。
-    @Test func replaceWhenDirectoryNotWritableThrowsAndKeepsBytesUnchanged() throws {
-        guard getuid() != 0 else {
-            Issue.record("以 root 运行时 0555 权限构造无效，本测试不可判定")
-            return
-        }
+    /// 构造二：settings.json 设为用户不可变 flag（UF_IMMUTABLE）→ 解析成功、临时文件
+    /// 写入成功，rename 覆盖不可变目标失败（EPERM）→ 抛错且原文件字节与调用前完全一致。
+    @Test func replaceWhenSettingsFileCannotBeReplacedThrowsAndKeepsBytesUnchanged() throws {
         try withTemporaryDirectory { dir in
             let writer = SettingsWriter(directory: dir)
+            let settingsPath = dir.appendingPathComponent("settings.json").path
             try writeSettings(dir, #"{"env": {"ANTHROPIC_BASE_URL": "a"}, "model": "opus"}"#)
             let originalBytes = try settingsData(in: dir)
-            try FileManager.default.setAttributes([.posixPermissions: 0o555], ofItemAtPath: dir.path)
-            defer {
-                try? FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: dir.path)
+            guard chflags(settingsPath, UInt32(UF_IMMUTABLE)) == 0 else {
+                Issue.record("无法设置 UF_IMMUTABLE，本测试不可判定")
+                return
             }
+            defer { chflags(settingsPath, 0) }
 
             #expect(throws: Error.self) {
                 try writer.replaceAnthropicEnv(with: ["ANTHROPIC_BASE_URL": "b"])
             }
             #expect(try settingsData(in: dir) == originalBytes)
+            var isDirectory: ObjCBool = false
+            FileManager.default.fileExists(atPath: settingsPath, isDirectory: &isDirectory)
+            #expect(!isDirectory.boolValue)
+        }
+    }
+
+    /// 绑定断言：已存在的宽权限目录与文件（0755/0644）在替换后收紧为 0700/0600。
+    /// 文件 0600 只能来自临时文件诞生时的模式（写入后不再有 chmod 步骤），
+    /// 由此绑定「临时文件从诞生起 0600、无 0644 凭据暴露窗口」。
+    @Test func replaceTightensExistingWidePermissionsOnDirectoryAndFile() throws {
+        try withTemporaryDirectory { dir in
+            let writer = SettingsWriter(directory: dir)
+            let settingsURL = dir.appendingPathComponent("settings.json")
+            try writeSettings(dir, #"{"env": {"ANTHROPIC_BASE_URL": "a"}}"#)
+            try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: dir.path)
+            try FileManager.default.setAttributes([.posixPermissions: 0o644], ofItemAtPath: settingsURL.path)
+
+            try writer.replaceAnthropicEnv(with: ["ANTHROPIC_BASE_URL": "b"])
+
+            #expect(try posixPermissions(of: dir.path) == 0o700)
+            #expect(try posixPermissions(of: settingsURL.path) == 0o600)
+            #expect(try envDictionary(in: dir) == ["ANTHROPIC_BASE_URL": "b"])
         }
     }
 
