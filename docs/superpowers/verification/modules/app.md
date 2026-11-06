@@ -33,3 +33,10 @@ S9/S10 由 `swift test` 套件承载（资产：Tests/ccmodelTests/）；S11–S
 
 - APP-L1-023 | L1 | Tests/ccmodelTests（swift test） | normal | settings.json 写入不转义斜杠（URL 值原样可读，JSON 语义等价）
 - APP-L2-024 | L2 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md（人工：表单粘贴） | normal | 表单输入框 Cmd+V 粘贴有效（主菜单编辑装配回归）
+
+## CC Models 改名（2026-11-06-rename-cc-models）并入
+
+- APP-L1-025 | L1 | docs/superpowers/archived/2026-11-06-rename-cc-models/verification.md#R1-01 | normal | 显示面旧名检索命中 0（升级/卸载说明 2 处按口径排除）且 swift test 143 全绿
+- APP-L2-026 | L2 | docs/superpowers/archived/2026-11-06-rename-cc-models/verification.md#R1-02 | normal | 打包产物 dist/CC Models.app，plist 名称=CC Models、可执行名 ccmodel 与标识 com.ccmodel.app 不变
+- APP-L1-027 | L1 | docs/superpowers/archived/2026-11-06-rename-cc-models/verification.md#R1-03 | normal | README 无旧名残留（升级/卸载说明除外）、测试计数为 143
+- APP-L3-028 | L3 | docs/superpowers/archived/2026-11-06-rename-cc-models/verification.md#R1-04 | normal | 退出菜单/偏好窗/欢迎窗/应用菜单/通知标题/损坏弹窗均显示 CC Models，开机自启重新登记
