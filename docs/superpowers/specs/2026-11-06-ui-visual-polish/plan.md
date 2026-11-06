@@ -10,6 +10,7 @@
 - **设计文档（Spec）：** `docs/superpowers/specs/2026-11-06-ui-visual-polish/design.md`（2026-11-06 确认后回填）
 - **实施前决策记录 + 日期：** 2026-11-06（decisions.md 五条：图标 D、配色 B、居中、720×480、首跑隐藏默认行）。
 - 验证方案见同目录 `verification.md`。
+- 实现设计见同目录 implementation.md；本文件是唯一执行依据。
 
 ## 1. 改动地图
 
@@ -22,7 +23,7 @@ flowchart LR
 |------|------|------|
 | `Sources/ccmodel/ProfileFields.swift` | T1 | I-1 语义变更 |
 | `Sources/ccmodel/StatusItemController.swift` | T1 | I-2 图标注入、失败态标题 |
-| `Sources/ccmodel/AppDelegate.swift` | T1 | 全局深色外观；窗口居中接线 |
+| `Sources/ccmodel/AppDelegate.swift` | T1 | 全局深色外观装配 |
 | `Sources/ccmodel/WindowPresenter.swift`（新增） | T1 | I-3 居中基座 |
 | `Sources/ccmodel/ImportDialog.swift` | T1 | 弹窗居中、深色继承确认 |
 | `Sources/ccmodel/PreferencesWindow.swift` | T2 | 尺寸/最小尺寸/居中/密度 |
@@ -46,29 +47,29 @@ flowchart LR
 - Test: 上述 Tests 文件内更新 + 新增（如需）
 
 **Interfaces:**
-- Consumes: Task 1（主需求）`ProfileFields.statusItemTitle`、`ProfileFields` 校验；Task 5 `StatusItemController`（titleWriter 缝、deferMenuCloseEvaluation 缝——均保留语义）。
+- Consumes: 基线计划（docs/superpowers/archived/2026-11-04-cc-model/plan.md）Task 1 的 `ProfileFields.statusItemTitle` 与校验纯函数；基线 Task 5 的 `StatusItemController`（titleWriter 缝、deferMenuCloseEvaluation 缝——均保留语义）。
 - Produces:
   - `ProfileFields.statusItemTitle(displayName:)` 新语义：返回纯截断名（无 ⇄ 前缀；截断规则不变）——见 implementation.md §I-1。
-  - `StatusItemController`：状态项按钮 = `arrow.left.arrow.right` 模板图 + I-1 标题；符号不可用回退纯文字标题。
-  - `WindowPresenter.prepare(_ window: NSWindow)`：居中于所在屏（首次打开即主屏）。
+  - `StatusItemController`：状态项按钮 = `arrow.left.arrow.right` 模板图 + I-1 标题；符号解析回退纯文字标题（经 symbolProvider 注入缝，见 implementation.md §I-2）。
+  - `WindowPresenter.prepare(_ window: NSWindow)`：居中于所在屏（首次打开即主屏）——见 implementation.md §I-3。
   - AppDelegate 启动时设置全局深色外观。
   - ImportDialog：`runModal` 前对弹窗窗口居中。
 - 调用示例：`WindowPresenter.prepare(preferencesWindow)` 后窗口中心 == 所在屏中心。
 
 **边界条件：**
-- 标题语义（逐字断言更新）：`statusItemTitle(displayName: "智谱")` == `"智谱"`；超 12 字符名 → 前 12 字符 + 「…」；❌ 返回值含「⇄ 」前缀。
+- 标题语义（逐字断言更新，共两函数四断言）：`statusItemTitle(displayName: "智谱")` == `"智谱"`；超 12 字符名 → 前 12 字符 + 「…」；❌ 返回值含「⇄ 」前缀。
 - readEnv 失败/未命中态：文字标题 `"—"`（图标不变）——时序单测期望由 `["⇄ —"]`/`["⇄ —", "⇄ 智谱"]` 改为 `["—"]`/`["—", "智谱"]`。
-- 符号不可用回退：系统符号解析失败 → 按钮仅文字标题，不崩溃（以注入或可选绑定路径表达，单测覆盖回退分支）。
+- 符号不可用回退：`symbolProvider` 注入缝返回 nil → 走纯文字标题路径，不崩溃（单测注入 nil 覆盖回退分支）。
 - `titleWriter` 注入缝语义保留：titleWriter 非 nil 时写注入目标，nil 时写真实按钮——图标注入不得破坏该缝（图标设置在 button 上，titleWriter 只管标题字符串）。
 - 全局深色外观一次性设置（启动装配处），不逐窗口重复设置。
 - 居中：对已可见窗口重复调用 prepare 不产生位置跳变以外的副作用；导入弹窗在 runModal 前居中。
 - 环境注意：`swift test` 失败 → 重跑一次 → 仍败 `swift package reset; swift test`。
 
 **验收标准：**
-- statusItemTitle 新语义两断言（短名、13 字符截断）改写并通过。
+- statusItemTitle 新语义断言改写并通过（两函数共四断言：短名、截断、❌ 前缀对照等）。
 - 时序单测期望改写并通过（`["—"]` / `["—", "智谱"]`）。
-- 图标回退分支一条断言（符号解析 nil → 无图标题路径）。
-- 既有其余断言（129 条中不受 I-1 影响者）零改动通过。
+- 图标回退分支一条断言（symbolProvider 注入 nil → 纯文字标题路径）。
+- 既有其余断言（受 I-1 影响 3 个测试函数 6 处断言之外的全部）零改动通过。
 - 弹窗居中调用存在（装配代码核查，UI 效果归 verification 人工）。
 
 ### Task 2: 偏好窗口尺寸排版与表单参数化、首跑窗适配
@@ -77,22 +78,23 @@ flowchart LR
 
 **Files:**
 - Create: 无
-- Modify: `Sources/ccmodel/PreferencesWindow.swift`、`Sources/ccmodel/ProfileFormView.swift`、`Sources/ccmodel/FirstRunCoordinator.swift`、`Sources/ccmodel/WelcomeWindow.swift`
+- Modify: `Sources/ccmodel/PreferencesWindow.swift`、`Sources/ccmodel/ProfileFormView.swift`、`Sources/ccmodel/FirstRunCoordinator.swift`、`Sources/ccmodel/WelcomeWindow.swift`、`Sources/ccmodel/AppDelegate.swift`
 - Test: `Tests/ccmodelTests/ProfileFormModelTests.swift`（如参数化触及可测件；视图层不写单测）
 
 **Interfaces:**
-- Consumes: Task 1 `WindowPresenter.prepare`；Task 6 `ProfileFormModel`（零变更）、`ProfileFormView`（本任务改）。
+- Consumes: Task 1 `WindowPresenter.prepare`；基线 Task 6（archived/…/plan.md）的 `ProfileFormModel`（零变更）；本需求 Task 1 的 Task 1 产物。
 - Produces:
   - `ProfileFormView` 增加 `hidesDefaultToggle: Bool = false`（默认值保既有调用点零改动；`true` 不渲染「设为默认」行——见 implementation.md §I-4）。
   - 偏好窗口：内容尺寸 720×480、最小 660×430、打开前 `WindowPresenter.prepare`。
   - 首跑欢迎窗/表单窗：打开前 `WindowPresenter.prepare`；表单以 `hidesDefaultToggle: true` 构造。
+  - AppDelegate.showPreferences 两条路径（首开与复用）均在 makeKeyAndOrderFront 前调用 `WindowPresenter.prepare`（偏好窗居中接线的归属落点）。
   - 视觉规格值全部取 implementation.md §5 色值表。
 - 调用示例：`FirstRunCoordinator` 构造表单视图时传 `hidesDefaultToggle: true` → 首跑窗无「设为默认」行，保存后模型仍自动成为默认（行为不变）。
 
 **边界条件：**
 - 偏好窗口尺寸：默认内容尺寸恰为 720×480；`contentMinSize` = 660×430；`contentMaxSize` 不设上限。
 - 四档横排：四列等宽（HStack spacing 8）；长模型名截断省略（lineLimit 1 + truncationMode middle），不撑破列宽。
-- `hidesDefaultToggle` 两个取值的行为分叉仅影响该行渲染；保存链路（含首跑自动默认）零变更。
+- `hidesDefaultToggle` 两个取值的行为分叉仅影响该行渲染；保存链路（含首跑自动默认）零变更；行为正确性由 verification V-06 人工核对。
 - 深色微调（输入框底色等）不偏离冻结稿整体观感（design §4 边界）。
 - 首跑两窗与偏好窗均经 WindowPresenter 居中。
 - 行为零变更红线：保存/切换/导入/通知的一切既有测试零改动通过。
