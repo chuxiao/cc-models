@@ -9,3 +9,6 @@
 2026-11-06 | CC Model | 窗口位置 | 裁决：全部窗口（偏好/首跑欢迎/首跑表单/导入弹窗）打开时居中于屏幕 | 需求方明确要求「面板打开应该在屏幕的正中央」 | 各窗口 show 路径
 2026-11-06 | CC Model | 面板尺寸与密度 | 裁决：偏好窗口默认 720×480（最小 660×430，可调）；侧栏 200pt；表单留白 20pt、行距 14pt；档位映射改横排四列 | 需求方反馈「大小不合理、选项太挤」+ 高保真稿确认（均接受） | PreferencesWindow、ProfileFormView
 2026-11-06 | CC Model | 顺带收敛 | 裁决：ProfileFormView 增加「隐藏设为默认行」参数，首跑窗隐藏该行——消解终审 deferred minor（T6 首跑默认 Toggle UI 承诺不一致） | 终审建议 + 本需求 UI 顺带 | ProfileFormView、FirstRunCoordinator
+2026-11-06 | CC Model | 表单标签与窗口标题文案 | 裁决：按冻结稿逐字改写（接入点 URL / API Token / 设为默认模型 / 保 存 / CC Model 设置）；既有逐字红线仅辖通知/菜单/三出口与徽标 | 冻结稿即需求方确认物，文字观感属视觉层 | ProfileFormView 标签、PreferencesWindow 标题
+2026-11-06 | CC Model | 错误弹窗居中范围 | 裁决：错误类模态弹窗（配置损坏说明窗/保存失败/操作失败提示）不参与居中，维持系统默认位置 | 居中针对业务窗口四路径，错误弹窗打断感更强 | design V3、WindowPresenter 调用点
+2026-11-06 | CC Model | 多显示器副屏复用锚 | 裁决：偏好窗复用路径先归位主屏再居中（prepare 内处理） | design V3 明文主屏为锚 | implementation §I-3、PreferencesWindow
