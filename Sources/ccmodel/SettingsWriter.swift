@@ -64,7 +64,7 @@ struct SettingsWriter {
 
         try writeAtomically(JSONSerialization.data(
             withJSONObject: root,
-            options: [.prettyPrinted, .sortedKeys]
+            options: [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
         ))
     }
 

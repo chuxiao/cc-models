@@ -24,7 +24,7 @@ macOS 菜单栏应用：一键切换 Claude Code 的 API 供应商（智谱 / De
 git clone <本仓库> && cd cc-model
 swift build          # 编译
 swift run            # 运行：菜单栏出现箭头图标
-swift test           # 141 条单元测试
+swift test           # 143 条单元测试
 ```
 
 > **已知构建怪癖**：冷启动时可能遇到宏插件报错（`TestingMacros` / `SwiftUIMacros` 相关，CLT 工具链问题）。处置：重跑一次；仍失败则 `swift package reset && swift test`（或 `swift build`）。
@@ -73,7 +73,7 @@ bash scripts/make-app.sh
 
 ## 开发者
 
-- 单元测试：`swift test`（141 条）
+- 单元测试：`swift test`（143 条）
 - 设计/计划/验证方案：`docs/superpowers/archived/2026-11-04-cc-model/`
 - 验证场景登记册（15 条回归场景）：`docs/superpowers/verification/`
 - 打包：`scripts/make-app.sh`（五步构建 + 失败非零退出 + 产物自检）

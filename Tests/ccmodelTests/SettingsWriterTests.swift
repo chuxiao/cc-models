@@ -129,6 +129,24 @@ struct SettingsWriterTests {
         }
     }
 
+    // MARK: - 序列化格式
+
+    /// settings.json 可能被用户手工查看/编辑：URL 值不得转义为 `\/`
+    /// （JSON 语义等价但不可读）。断言读原始字节而非解析结果，绑定的是输出格式本身。
+    @Test func replaceWritesURLValueWithoutEscapingSlashes() throws {
+        try withTemporaryDirectory { dir in
+            let writer = SettingsWriter(directory: dir)
+            let url = "https://open.bigmodel.cn/api/anthropic"
+
+            try writer.replaceAnthropicEnv(with: ["ANTHROPIC_BASE_URL": url])
+
+            let raw = String(decoding: try settingsData(in: dir), as: UTF8.self)
+            #expect(!raw.contains("\\/"))
+            #expect(raw.contains("https://open.bigmodel.cn"))
+            #expect(try envDictionary(in: dir) == ["ANTHROPIC_BASE_URL": url])
+        }
+    }
+
     // MARK: - 创建路径
 
     @Test func replaceCreatesMissingSettingsFileWithEnvOnly() throws {

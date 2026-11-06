@@ -13,6 +13,8 @@ struct Main {
         let app = NSApplication.shared
         app.delegate = appDelegate
         app.setActivationPolicy(.accessory)
+        // 缺陷 2 修复：文本编辑快捷键（Cmd+V/C/X/A）依赖主菜单「编辑」菜单经响应链派发。
+        app.mainMenu = AppMenu.buildMainMenu()
         app.run()
     }
 }
