@@ -16,8 +16,8 @@
 ## 2. 场景清单
 
 ### R1-01 显示面文案替换【自动化（改名范围检索 + swift test）】
-- 步骤：`grep -rnw 'CC Model' Sources Tests scripts README.md`（限定改名范围、-w 整词排除新值 CC Models）——命中数应为 0；`swift test` 全量通过（MenuBuilderTests 退出项断言为新逐字值）。
-- 期望：命中 0；143/143 通过。出处：design §R1、§5。
+- 步骤：`grep -rnw 'CC Model' Sources Tests scripts README.md | grep -v 'CC Model\.app'`（限定改名范围、-w 整词排除新值 CC Models；README 安装/卸载说明中对旧包的 2 处指称属有意保留，按 `.app` 后缀排除）——命中数应为 0；`swift test` 全量通过（MenuBuilderTests 退出项断言为新逐字值）。
+- 期望：命中 0（上述 2 处升级说明除外）；143/143 通过。出处：design §R1、§5。
 
 ### R1-02 打包产物名【自动化（脚本验收）】
 - 步骤：`bash scripts/make-app.sh` → 检查产物路径与 plutil。

@@ -44,6 +44,8 @@ bash scripts/make-app.sh
 3. 双击打开（本地构建无 quarantine 属性，Gatekeeper 不会拦；若从其他途径传输，先 `xattr -d com.apple.quarantine "CC Models.app"`）
 4. 菜单栏出现箭头图标即安装完成
 
+> **从旧版升级**：已在用「CC Model.app」的话，先退出旧应用并从 /Applications 删除它，再放入 `CC Models.app`。两个版本共用同一 bundle id，旧包留着会被开机自启项优先拉起、看到的仍是旧产品名。重装后需在偏好设置里把「开机自启」关闭再打开一次，重新登记登录项。
+
 > ad-hoc 签名仅本机有效——这个 app 不适合分发给别人（那是新需求，需另行设计签名与公证）。
 
 ## 使用
@@ -68,7 +70,7 @@ bash scripts/make-app.sh
 
 1. 偏好设置… → 关闭「开机自启」
 2. 菜单 → 退出 CC Models
-3. 从 /Applications 删除 CC Models.app
+3. 从 /Applications 删除 CC Models.app（若从旧版升级而来，旧的 CC Model.app 已在升级时删除，不会有残留登录项）
 4. （可选，彻底清理）删除配置目录 `~/Library/Application Support/cc-model/`；`~/.claude/settings.json` 保留当前值即可继续用 Claude Code
 
 ## 开发者

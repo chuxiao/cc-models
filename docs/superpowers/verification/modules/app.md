@@ -1,4 +1,4 @@
-# CC Model 场景登记册（modules/app.md）
+# CC Models 场景登记册（modules/app.md）
 
 场景源头：docs/superpowers/specs/2026-11-04-cc-model/verification.md（已随 specs 归档至 docs/superpowers/archived/2026-11-04-cc-model/）。
 S9/S10 由 `swift test` 套件承载（资产：Tests/ccmodelTests/）；S11–S15 与 S1–S8 为人工清单（资产：归档验证方案的人工步骤），机器可操作部分由控制者执行、观察点由需求方确认。
