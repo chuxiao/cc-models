@@ -1,0 +1,125 @@
+<h2>偏好设置窗口 · 高保真稿（按真实比例 720×480）</h2>
+<p class="subtitle">深色主题 + 松开排版后的样子：侧栏 200pt、表单留白 20pt、行距 14pt、字段不再挤。看完确认尺寸与密度，或告诉我要调的地方。</p>
+
+<style>
+  .prefs { width:720px; margin:0 auto; background:#1e1e24; border:1px solid rgba(255,255,255,.1);
+    border-radius:12px; overflow:hidden; font-size:12.5px; color:#e2e2ea;
+    box-shadow:0 18px 50px rgba(0,0,0,.55); text-align:left; }
+  .prefs .tb { height:34px; background:#26262e; display:flex; align-items:center; padding:0 12px; gap:6px;
+    border-bottom:1px solid rgba(255,255,255,.06); }
+  .prefs .tb .dot { width:11px; height:11px; border-radius:50%; }
+  .prefs .tb .t { margin:0 auto; color:#8f8f9c; font-size:12px; font-weight:600; transform:translateX(-22px); }
+  .prefs .body { display:flex; height:410px; }
+  .prefs .side { width:200px; background:#24242c; border-right:1px solid rgba(255,255,255,.06);
+    display:flex; flex-direction:column; }
+  .prefs .list { flex:1; padding:10px 8px; }
+  .prefs .mrow { display:flex; align-items:center; justify-content:space-between; padding:8px 12px;
+    border-radius:7px; margin-bottom:2px; }
+  .prefs .mrow.sel { background:#3a3f4d; }
+  .prefs .mrow .nm { font-weight:600; }
+  .prefs .badge { font-size:10px; background:linear-gradient(135deg,#4f8dff,#7c5cff); color:#fff;
+    padding:1px 7px; border-radius:8px; font-weight:600; }
+  .prefs .sidefoot { padding:10px; border-top:1px solid rgba(255,255,255,.06); display:flex; flex-direction:column; gap:10px; }
+  .prefs .addel { display:flex; gap:8px; }
+  .prefs .sq { flex:1; height:26px; border-radius:6px; background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.1); display:flex; align-items:center; justify-content:center; color:#c8c8d2; }
+  .prefs .switchrow { display:flex; align-items:center; justify-content:space-between; color:#a9a9b6; font-size:11.5px; }
+  .prefs .switch { width:34px; height:20px; border-radius:10px; background:#0a84ff; position:relative; }
+  .prefs .switch::after { content:''; position:absolute; right:2px; top:2px; width:16px; height:16px;
+    border-radius:50%; background:#fff; }
+  .prefs .detail { flex:1; padding:20px 22px; display:flex; flex-direction:column; gap:14px; }
+  .prefs .fld { display:flex; align-items:center; gap:12px; }
+  .prefs .lbl { width:72px; text-align:right; color:#8f8f9c; font-size:11.5px; flex-shrink:0; }
+  .prefs .inp { flex:1; background:#16161b; border:1px solid rgba(255,255,255,.1); border-radius:7px;
+    padding:7px 11px; color:#e2e2ea; font-size:12px; white-space:nowrap; overflow:hidden; }
+  .prefs .inp.ghost { color:#5c5c68; }
+  .prefs .tiers { display:flex; gap:8px; }
+  .prefs .tier { flex:1; text-align:center; }
+  .prefs .tier .cap { font-size:10px; color:#8f8f9c; margin-bottom:4px; }
+  .prefs .tier .inp { padding:6px 8px; font-size:11px; }
+  .prefs .foot { display:flex; align-items:center; justify-content:space-between; margin-top:4px; }
+  .prefs .chk { display:flex; align-items:center; gap:8px; color:#a9a9b6; font-size:11.5px; }
+  .prefs .cbox { width:14px; height:14px; border-radius:4px; background:#0a84ff; display:inline-flex;
+    align-items:center; justify-content:center; color:#fff; font-size:10px; }
+  .prefs .save { background:linear-gradient(135deg,#4f8dff,#7c5cff); color:#fff; font-weight:700;
+    padding:7px 26px; border-radius:8px; font-size:12.5px; }
+  .smallwin { width:300px; margin:0 auto; background:#1e1e24; border:1px solid rgba(255,255,255,.1);
+    border-radius:12px; overflow:hidden; font-size:12px; color:#e2e2ea; text-align:left;
+    box-shadow:0 14px 40px rgba(0,0,0,.5); }
+  .smallwin .body { padding:18px 20px; }
+</style>
+
+<div class="prefs">
+  <div class="tb">
+    <span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span>
+    <span class="t">CC Model 设置</span>
+  </div>
+  <div class="body">
+    <div class="side">
+      <div class="list">
+        <div class="mrow sel"><span class="nm">智谱</span><span class="badge">默认</span></div>
+        <div class="mrow"><span class="nm" style="color:#c2c2cd;">DeepSeek</span></div>
+        <div class="mrow"><span class="nm" style="color:#c2c2cd;">Kimi</span></div>
+      </div>
+      <div class="sidefoot">
+        <div class="addel"><div class="sq">＋</div><div class="sq">－</div></div>
+        <div class="switchrow"><span>开机自启</span><span class="switch"></span></div>
+      </div>
+    </div>
+    <div class="detail">
+      <div class="fld"><span class="lbl">显示名</span><span class="inp">智谱</span></div>
+      <div class="fld"><span class="lbl">接入点 URL</span><span class="inp">https://open.bigmodel.cn/api/anthropic</span></div>
+      <div class="fld"><span class="lbl">API Token</span><span class="inp">••••••••••••••••&nbsp;&nbsp;<span style="color:#4f8dff;">👁 显示</span></span></div>
+      <div class="fld"><span class="lbl">主模型</span><span class="inp">glm-5.3-flash[1m]</span></div>
+      <div class="fld" style="flex-direction:column;gap:8px;">
+        <span class="lbl" style="text-align:left;width:auto;">档位映射（可留空）</span>
+        <div class="tiers">
+          <div class="tier"><div class="cap">Fable</div><div class="inp">glm-5.3[1m]</div></div>
+          <div class="tier"><div class="cap">Opus</div><div class="inp">glm-5.3-flash[1m]</div></div>
+          <div class="tier"><div class="cap">Sonnet</div><div class="inp">glm-5.3-flash[1m]</div></div>
+          <div class="tier"><div class="cap">Haiku</div><div class="inp">glm-5.3-flash</div></div>
+        </div>
+      </div>
+      <div class="foot">
+        <span class="chk"><span class="cbox">✓</span>设为默认模型</span>
+        <span class="save">保 存</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin-top:30px;">同风格推及另两个面板（示意）</h3>
+<div class="split" style="gap:20px;">
+  <div class="mockup">
+    <div class="mockup-header">首跑欢迎窗（居中出现）</div>
+    <div class="mockup-body" style="padding:14px;display:flex;justify-content:center;">
+      <div class="smallwin">
+        <div class="body">
+          <div style="font-size:14px;font-weight:700;color:#fff;">欢迎使用 CC Model</div>
+          <div style="color:#a9a9b6;font-size:11.5px;margin:10px 0 14px;line-height:1.6;">一键切换 Claude Code 的 API 供应商。<br>检测到你当前使用 <b style="color:#4f8dff;">智谱</b>，已为你预填。</div>
+          <div style="display:flex;gap:10px;"><span class="save" style="padding:6px 18px;">开始配置</span><span style="padding:6px 14px;color:#8f8f9c;border:1px solid rgba(255,255,255,.12);border-radius:8px;">退出</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">自定义配置弹窗</div>
+    <div class="mockup-body" style="padding:14px;display:flex;justify-content:center;">
+      <div class="smallwin">
+        <div class="body">
+          <div style="font-size:13px;font-weight:700;color:#fff;">检测到未管理的配置</div>
+          <div style="color:#a9a9b6;font-size:11.5px;margin:8px 0 12px;line-height:1.6;">当前 settings.json 与任何已录入模型不一致。<br>显示名：<span class="inp" style="display:inline-block;padding:4px 10px;">My Provider</span></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <span class="save" style="padding:5px 14px;">纳入新模型</span>
+            <span style="padding:5px 12px;color:#fff;background:#0a84ff;border-radius:8px;font-size:11.5px;">覆盖已有 ▾</span>
+            <span style="padding:5px 12px;color:#8f8f9c;">取消</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <p class="subtitle">确认点：① 这个窗口尺寸（720×480）和排版密度够松了吗？② 四档映射改成横排四列（更紧凑直观）可以吗？③ 首跑/弹窗的风格延续有没有想调的？</p>
+</div>

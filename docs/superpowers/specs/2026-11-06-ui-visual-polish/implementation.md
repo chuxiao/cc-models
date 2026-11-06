@@ -1,0 +1,107 @@
+# CC Model UI 视觉优化 实现设计
+
+> 读者：审查者与实施者。本文是本需求涉及接口变更与视觉规格值的唯一权威定义；plan.md 只引用章节号。
+
+## 0. 形态声明
+
+产物形态：桌面 App（既有应用视觉层迭代）。
+章节裁剪推导：数据与状态设计——不设独立章，见 §2 声明（零新增持久化）；运行与部署——不设（沿用既有交付形态）。
+
+## 1. 结构设计
+
+零新增模块。触及的既有文件与职责：
+
+| 文件 | 触及内容 |
+|------|---------|
+| `Sources/ccmodel/StatusItemController.swift` | 状态项图标（模板图注入）、标题语义变更（去 ⇄ 前缀）、readEnv 失败标题 |
+| `Sources/ccmodel/ProfileFields.swift` | `statusItemTitle(displayName:)` 语义变更（见 I-3） |
+| `Sources/ccmodel/AppDelegate.swift` | 全局固定深色外观装配；窗口居中接线 |
+| `Sources/ccmodel/PreferencesWindow.swift` | 默认尺寸/最小尺寸、居中、排版密度 |
+| `Sources/ccmodel/ProfileFormView.swift` | 四档横排四列、`hidesDefaultToggle` 参数、深色适配微调 |
+| `Sources/ccmodel/FirstRunCoordinator.swift` | 首跑窗传 `hidesDefaultToggle: true`、窗口居中 |
+| `Sources/ccmodel/WelcomeWindow.swift` | 居中、深色适配 |
+| `Sources/ccmodel/ImportDialog.swift` | 弹窗居中、深色适配 |
+| `Tests/ccmodelTests/ProfileFieldsTests.swift`、`ModelSwitcherTests.swift` | 标题语义变更的断言更新（I-3） |
+
+依赖方向不变：视觉层改动全部位于 UI 层与 Task 1 的纯函数一处语义变更；Task 2–4 的存储/写引擎/检测零改动。
+
+## 2. 数据与状态设计（声明）
+
+零新增持久化、零 schema 变更、零状态新增（`isTokenSecure`/`validationErrors` 为 Task 6 既有；`hidesDefaultToggle` 是视图构造参数，不是状态）。
+
+## 3. 接口设计（变更与新增）
+
+### I-1 `ProfileFields.statusItemTitle(displayName:)` — 语义变更
+
+- **职责：** 返回状态项按钮的文字标题（图标改为独立模板图后，文字仅承担模型名）。
+- **签名：** 不变 `static func statusItemTitle(displayName: String) -> String`。
+- **行为变更：** 返回值由 `"⇄ " + 截断名` 变更为 `截断名`（截断规则不变：超 12 字符取前 12 + 「…」）。
+- **错误表：** 无（纯函数）。
+- **示例：** `statusItemTitle(displayName: "智谱")` → `"智谱"`；13 字符名 → 前 12 字符 + `"…"`。
+- **被谁依赖：** StatusItemController（正常态与切换后刷新）；readEnv 失败态的「—」标题语义不变（I-2）。
+- **连带断言更新：** ProfileFieldsTests 的 ⇄ 前缀断言、13 字符截断断言按新语义改写；ModelSwitcherTests 的 titleWriter 时序断言 `["⇄ —"]`/`["⇄ —", "⇄ 智谱"]` 改为 `["—"]`/`["—", "智谱"]`。
+
+### I-2 StatusItemController 状态项图标 — 新增装配
+
+- **职责：** 状态项按钮 = 系统符号「直线双向箭头」模板图 + 文字标题。
+- **行为：** `button.image` = 系统符号 `arrow.left.arrow.right`（符号配置：字重 regular、点阵尺度适配状态栏高度），`image.isTemplate = true`；`button.title` = I-1 的返回值；readEnv 失败/未命中态文字为 `"—"`（语义与既有裁定一致，前缀符号已由图像承担）。
+- **错误表：** 系统符号名在本机 SDK 不可用（理论不可达，符号随系统提供）→ 回退为纯文字标题（不含 ⇄ 前缀），不崩溃。
+- **被谁依赖：** Main 装配链。
+
+### I-3 窗口居中基座 — 新增
+
+- **职责：** 统一「窗口打开前居中于主屏」。
+- **签名：** `enum WindowPresenter { static func prepare(_ window: NSWindow) }`——设置内容尺寸调用方自理，`prepare` 内执行 `window.center()`。
+- **行为：** 偏好窗口、首跑欢迎窗、首跑表单窗在 `makeKeyAndOrderFront` 前调用；导入弹窗在 `runModal` 前对 `alert.window` 调用。
+- **错误表：** 无。多显示器：NSWindow.center() 以窗口所在屏为准，装配时窗口尚无屏幕归属即落在主屏——符合设计「主屏为锚」。
+- **被谁依赖：** PreferencesWindow、FirstRunCoordinator、ImportDialog。
+
+### I-4 `ProfileFormView` 参数 — 新增
+
+- **职责：** 支持首跑窗隐藏「设为默认」行。
+- **签名变更：** 视图初始化增加 `hidesDefaultToggle: Bool = false`（默认值保证既有调用点零改动）。
+- **行为：** `true` 时不渲染「设为默认」勾选行；`false`（偏好窗）渲染不变。
+- **被谁依赖：** PreferencesWindow（false/缺省）、FirstRunCoordinator（true）。
+
+## 4. 流程设计
+
+零新增链路。视觉变化全部发生在既有链路的呈现点：启动装配（外观+图标）、窗口打开（居中+尺寸）、表单渲染（横排/参数）。
+
+## 5. 界面实现规格（视觉规格唯一权威值）
+
+**全局**：`NSApp.appearance = NSAppearance(named: .dark)`（启动时一次性设置，三窗口+弹窗统一继承深色）。
+
+**色值表**（冻结稿 mockups/preferences.html 为准，实现取值如下）：
+
+| 用途 | 值 |
+|------|-----|
+| 窗口卡面 | #1E1E24 |
+| 侧栏/标题栏 | #24242C |
+| 分隔线/描边 | rgba(255,255,255,0.06–0.10) |
+| 输入框底 | #16161B |
+| 选中行 | #3A3F4D |
+| 主按钮渐变 | linear-gradient 135°，#4F8DFF → #7C5CFF |
+| 「默认」徽标渐变 | 同主按钮渐变 |
+| 系统勾选蓝 | #0A84FF |
+| 主文字 | #E2E2EA |
+| 辅助文字 | #8F8F9C |
+
+**状态项**：符号 `arrow.left.arrow.right`，模板图，点阵尺寸适配状态栏（约 16pt）；标题 = I-1。
+
+**偏好窗口**：内容尺寸 720×480，最小 660×430；侧栏 200pt；表单内边距 20pt；行间距 14pt；档位横排四列等宽（HStack spacing 8）。
+
+**图标/文字渲染、深色逐控件微调**：留给构建者（design §4），边界=不偏离冻结稿观感。
+
+## 6. 规模评估
+
+触及 8 个源文件 + 2 个测试文件；预估改动 ~200 行（视觉参数为主，逻辑增量仅 I-1/I-2/I-3/I-4 四个接口点）；零新增依赖。
+
+## 7. 设计依据 / 约束 / 风险
+
+- 依据：视觉稿冻结件（mockups/exploration.html、preferences.html）与 decisions.md 五条裁决；statusItemTitle 语义变更是图标化的必然配套，属接口兼容性变更——已由本文件冻结，测试断言更新随 Task 1。
+- 约束：139 条既有测试语义保持（仅 I-1 连带断言按新语义改写）；零新增依赖；行为零变更红线（design §3 第 1 条）。
+- 风险：SF Symbol 渲染在不同菜单栏高度下的点阵微差（示意级）；深色固定外观在浅色系统下的观感（需求方已选定）。
+
+## 附：独立审读处置记录
+
+待审读。

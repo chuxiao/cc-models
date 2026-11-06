@@ -1,0 +1,145 @@
+<h2>CC Model 视觉方向：三件事一次定</h2>
+<p class="subtitle">① 菜单栏图标换成独立设计的图形；② 面板配色现代化；③ 所有窗口打开时居中。每节点选一个你喜欢的方向。</p>
+
+<style>
+  .menubar { display:flex; align-items:center; justify-content:flex-end; gap:12px;
+    background: linear-gradient(180deg,#3a3a40,#242428); border-radius:6px;
+    padding:0 12px; height:30px; color:#d8d8dc; font-size:12.5px; }
+  .mstatus { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16);
+    padding:3px 9px; border-radius:5px; color:#fff; font-weight:600; }
+  .icon-demo { width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center; }
+  .glyph { width:18px; height:18px; border-radius:5px; display:inline-flex; align-items:center;
+    justify-content:center; font-size:11px; font-weight:800; }
+  .glyph.line { background:transparent; border:1.6px solid #fff; color:#fff; border-radius:50%; }
+  .glyph.badge { background:linear-gradient(135deg,#4f8dff,#7c5cff); color:#fff; border-radius:6px; }
+  .win { border-radius:10px; overflow:hidden; font-size:11px; color:#d6d6dc; border:1px solid rgba(255,255,255,.1); }
+  .win .tb { height:26px; display:flex; align-items:center; padding:0 10px; gap:5px; }
+  .win .dot { width:9px; height:9px; border-radius:50%; opacity:.9; }
+  .win .side { width:34%; padding:8px; }
+  .win .main { flex:1; padding:8px; }
+  .row { height:10px; border-radius:4px; margin-bottom:6px; }
+  .btn { display:inline-block; border-radius:5px; padding:2px 10px; font-size:10px; font-weight:600; }
+  .desktop { position:relative; background:linear-gradient(135deg,#3d4652,#2b3038); border-radius:8px;
+    height:150px; overflow:hidden; }
+  .desktop .mbar { position:absolute; top:0; left:0; right:0; height:18px; background:rgba(10,10,12,.85); }
+  .desktop .mini-win { position:absolute; width:46%; height:60%; border-radius:8px; border:1px solid rgba(255,255,255,.2); }
+</style>
+
+<h3>① 菜单栏图标：独立设计，替换现在的文本「⇄」</h3>
+<p class="subtitle">菜单栏图标按 Apple 规范是单色模板图（自动适配明暗菜单栏）。四个方向，A/D 用系统 SF Symbol 矢量（原生质感），B/C 是独立绘制的图形。</p>
+<div class="cards">
+  <div class="card" data-choice="icon-ring" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1b1b1f;padding:14px;">
+      <div class="menubar"><span>🔋</span><span>🔍</span><span class="mstatus"><span class="icon-demo">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 6a5 5 0 0 1 9-1.5M13 10a5 5 0 0 1-9 1.5" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/><path d="M12 1.5v3.2h-3.2M4 14.5v-3.2h3.2" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>智谱</span></div>
+      <div class="menubar" style="background:linear-gradient(180deg,#e8e8ea,#dcdce0);color:#333;margin-top:8px;"><span>🔋</span><span>🔍</span><span class="mstatus" style="background:rgba(0,0,0,.1);color:#111;"><span class="icon-demo">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 6a5 5 0 0 1 9-1.5M13 10a5 5 0 0 1-9 1.5" stroke="#111" stroke-width="1.6" stroke-linecap="round"/><path d="M12 1.5v3.2h-3.2M4 14.5v-3.2h3.2" stroke="#111" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>智谱</span></div>
+    </div>
+    <div class="card-body"><h3>A · 环形交换箭头（SF Symbol）</h3><p>系统图标 <code>arrow.triangle.2.circlepath</code>，原生质感，明暗菜单栏自动适配，永不违和。</p></div>
+  </div>
+  <div class="card" data-choice="icon-badge" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1b1b1f;padding:14px;">
+      <div class="menubar"><span>🔋</span><span>🔍</span><span class="mstatus"><span class="icon-demo"><span class="glyph badge">智</span></span>智谱</span></div>
+      <div class="menubar" style="margin-top:8px;"><span>🔋</span><span>🔍</span><span class="mstatus"><span class="icon-demo"><span class="glyph badge" style="background:linear-gradient(135deg,#ff9f0a,#ff6482)">D</span></span>DeepSeek</span></div>
+    </div>
+    <div class="card-body"><h3>B · 供应商首字徽标</h3><p>圆角徽标里显示当前供应商首字，随切换变色——信息量最大，一眼知道在用哪家。</p></div>
+  </div>
+  <div class="card" data-choice="icon-glyph" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1b1b1f;padding:14px;">
+      <div class="menubar"><span>🔋</span><span>🔍</span><span class="mstatus"><span class="icon-demo"><span class="glyph line">⇄</span></span>智谱</span></div>
+    </div>
+    <div class="card-body"><h3>C · 独立绘制线条徽标</h3><p>圆环内的交换符号，比文本「⇄」有设计感，又比彩色徽标克制；单色模板图适配明暗。</p></div>
+  </div>
+  <div class="card" data-choice="icon-swap" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1b1b1f;padding:14px;">
+      <div class="menubar"><span>🔋</span><span>🔍</span><span class="mstatus"><span class="icon-demo">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 5.5h8M8.5 2.5l3 3-3 3M13.5 10.5h-8M7.5 13.5l-3-3 3-3" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>智谱</span></div>
+    </div>
+    <div class="card-body"><h3>D · 直线双向箭头（SF Symbol）</h3><p><code>arrow.left.arrow.right</code>，比 A 更直白地表达「交换」，同样原生自适应。</p></div>
+  </div>
+</div>
+
+<h3 style="margin-top:28px;">② 面板配色：告别默认灰</h3>
+<p class="subtitle">左边是现状（系统默认样式）供对照。B/C 是两个现代化方向，都会应用在偏好设置、首跑窗、导入弹窗三处。</p>
+<div class="cards">
+  <div class="card" data-choice="ref-current" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1b1b1f;padding:14px;">
+      <div class="win" style="background:#ececec;color:#555;border-color:#d0d0d0;">
+        <div class="tb" style="background:#e0e0e0;"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span></div>
+        <div style="display:flex;"><div class="side" style="background:#e6e6e6;"><div class="row" style="background:#d5d5d5;"></div><div class="row" style="background:#d5d5d5;width:70%"></div></div><div class="main"><div class="row" style="background:#dcdcdc;"></div><div class="row" style="background:#dcdcdc;width:60%"></div><div class="row" style="background:#dcdcdc;width:80%"></div></div></div>
+      </div>
+    </div>
+    <div class="card-body"><h3>现状对照 · 系统默认</h3><p>现在的样子：默认灰 Form，无品牌色、无层次。点击它表示「其实还行，只是微调」。</p></div>
+  </div>
+  <div class="card" data-choice="color-dark" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1b1b1f;padding:14px;">
+      <div class="win" style="background:#1e1e24;">
+        <div class="tb" style="background:#26262e;"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span style="margin-left:8px;color:#9a9aa6;font-size:10px;">CC Model 设置</span></div>
+        <div style="display:flex;">
+          <div class="side" style="background:#26262e;border-right:1px solid rgba(255,255,255,.07);">
+            <div class="row" style="background:#4f8dff;height:16px;"></div>
+            <div class="row" style="background:rgba(255,255,255,.06);"></div>
+            <div class="row" style="background:rgba(255,255,255,.06);width:70%"></div>
+          </div>
+          <div class="main">
+            <div class="row" style="background:rgba(255,255,255,.08);"></div>
+            <div class="row" style="background:rgba(255,255,255,.08);width:60%"></div>
+            <div style="margin-top:4px;"><span class="btn" style="background:linear-gradient(135deg,#4f8dff,#7c5cff);color:#fff;">保存</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><h3>B · 现代深邃</h3><p>深色卡面 + 细腻描边 + 蓝紫渐变主按钮 + 选中态高亮。开发者工具质感，与菜单栏暗色一体。</p></div>
+  </div>
+  <div class="card" data-choice="color-light" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#1b1b1f;padding:14px;">
+      <div class="win" style="background:#f5f5f7;color:#333;">
+        <div class="tb" style="background:#ffffff;border-bottom:1px solid #e8e8ee;"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span style="margin-left:8px;color:#86868b;font-size:10px;">CC Model 设置</span></div>
+        <div style="display:flex;">
+          <div class="side" style="background:#ffffff;border-right:1px solid #ececf0;">
+            <div class="row" style="background:#0a84ff;height:16px;"></div>
+            <div class="row" style="background:#ececf0;"></div>
+            <div class="row" style="background:#ececf0;width:70%"></div>
+          </div>
+          <div class="main" style="background:#f5f5f7;">
+            <div class="row" style="background:#ffffff;border:1px solid #e8e8ee;"></div>
+            <div class="row" style="background:#ffffff;border:1px solid #e8e8ee;width:60%"></div>
+            <div style="margin-top:4px;"><span class="btn" style="background:#0a84ff;color:#fff;">保存</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body"><h3>C · 清爽浅色</h3><p>白卡片 + 细分割线 + 系统蓝主按钮 + 柔和阴影。Apple 官网式干净，浅色菜单栏下最协调。</p></div>
+  </div>
+</div>
+
+<h3 style="margin-top:28px;">③ 窗口位置：打开时居中于屏幕</h3>
+<p class="subtitle">左：现状（窗口出现在左上角，可能压住菜单栏区域）。右：改后（每次打开都居中于屏幕正中）。</p>
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">现状 · 左上角出现</div>
+    <div class="mockup-body" style="padding:10px;">
+      <div class="desktop">
+        <div class="mbar"></div>
+        <div class="mini-win" style="top:14px;left:10px;background:#26262e;"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">改后 · 屏幕正中</div>
+    <div class="mockup-body" style="padding:10px;">
+      <div class="desktop">
+        <div class="mbar"></div>
+        <div class="mini-win" style="top:27%;left:27%;background:#26262e;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h3 style="margin-top:28px;">④ 需要你说清楚的一件事</h3>
+<div class="section">
+  <p>「桌面面板的遮挡问题」我想确认具体指什么：是 <strong>A</strong>——窗口默认出现在左上角、压住了菜单栏/屏幕角落的内容（居中后即解决）；还是 <strong>B</strong>——窗口悬浮在所有应用最上层、挡住其他 app（需要调整窗口层级）；还是 <strong>C</strong>——多个面板（偏好窗和弹窗）互相叠加错位？请在终端里告诉我（A/B/C 或具体描述）。</p>
+</div>
