@@ -82,7 +82,7 @@ flowchart LR
 - Test: `Tests/ccmodelTests/ProfileFormModelTests.swift`（如参数化触及可测件；视图层不写单测）
 
 **Interfaces:**
-- Consumes: Task 1 `WindowPresenter.prepare`；基线 Task 6（archived/…/plan.md）的 `ProfileFormModel`（零变更）；本需求 Task 1 的 Task 1 产物。
+- Consumes: Task 1 `WindowPresenter.prepare`；基线 Task 6（docs/superpowers/archived/2026-11-04-cc-model/plan.md）的 `ProfileFormModel`（零变更）。
 - Produces:
   - `ProfileFormView` 增加 `hidesDefaultToggle: Bool = false`（默认值保既有调用点零改动；`true` 不渲染「设为默认」行——见 implementation.md §I-4）。
   - 偏好窗口：内容尺寸 720×480、最小 660×430、打开前 `WindowPresenter.prepare`。
@@ -94,7 +94,7 @@ flowchart LR
 **边界条件：**
 - 偏好窗口尺寸：默认内容尺寸恰为 720×480；`contentMinSize` = 660×430；`contentMaxSize` 不设上限。
 - 四档横排：四列等宽（HStack spacing 8）；长模型名截断省略（lineLimit 1 + truncationMode middle），不撑破列宽。
-- `hidesDefaultToggle` 两个取值的行为分叉仅影响该行渲染；保存链路（含首跑自动默认）零变更；行为正确性由 verification V-06 人工核对。
+- `hidesDefaultToggle` 两个取值的行为分叉仅影响该行渲染；保存链路（含首跑自动默认）零变更。
 - 深色微调（输入框底色等）不偏离冻结稿整体观感（design §4 边界）。
 - 首跑两窗与偏好窗均经 WindowPresenter 居中。
 - 行为零变更红线：保存/切换/导入/通知的一切既有测试零改动通过。
@@ -102,7 +102,7 @@ flowchart LR
 
 **验收标准：**
 - 既有 139 条测试零改动通过（I-1 连带断言已在 Task 1 更新）。
-- `hidesDefaultToggle` 若触及可测件（构造参数存在性、默认 false）以编译与既有视图消费点核查承载；行为正确性由 verification V-07 人工核对。
+- `hidesDefaultToggle` 若触及可测件（构造参数存在性、默认 false）以编译与既有视图消费点核查承载；行为正确性由 verification V-06 人工核对。
 - 全部视觉约束点（尺寸/最小值/居中调用/参数传递）以装配代码核查承载，UI 效果归 verification 人工核对。
 
 ## 3. 设计依据
@@ -126,7 +126,7 @@ flowchart LR
 | 风险 | 触发条件 | 影响 | 缓解方式 |
 |------|---------|------|---------|
 | 深色外观下个别系统控件仍呈浅色 | 固定深色外观未覆盖某控件层次 | 观感割裂 | 装配后人工核查三窗口；控件级微调留构建者（design §4） |
-| 图标模板图在明/暗菜单栏对比度不足 | 系统渲染差异 | 状态项辨识度下降 | 模板图由系统保证对比度；S-V2 人工核对明暗两态 |
+| 图标模板图在明/暗菜单栏对比度不足 | 系统渲染差异 | 状态项辨识度下降 | 模板图由系统保证对比度；V-02 人工核对明暗两态 |
 | 720×480 在小屏外接显示器放不下 | 屏幕逻辑分辨率极小 | 窗口超出屏幕 | 最小 660×430 + 系统约束窗口入屏；风险量级低 |
 | 横排档位长名截断 | 模型 ID 超长 | 信息可读性下降 | lineLimit + middle 截断；可拖宽窗口缓解 |
 | 既有 titleWriter 时序测试破坏 | I-1 断言更新遗漏 | 测试红 | Task 1 验收明列改写清单 |
