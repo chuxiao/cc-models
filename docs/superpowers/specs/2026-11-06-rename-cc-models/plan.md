@@ -33,15 +33,15 @@
 - 调用示例：`bash scripts/make-app.sh` → `dist/CC Models.app` 存在且 `plutil -p dist/"CC Models.app"/Contents/Info.plist` 显示 CFBundleName=CC Models。
 
 **边界条件：**
-- 替换精确整词「CC Model」，**不得**触碰 cc-model / ccmodel / com.ccmodel.app / CC_MODEL_CONFIG_DIR 字面量（❌ 模糊替换把配置目录引用改坏 / ✅ 改名范围检索「cc-model」「ccmodel」命中数与改前一致）。
+- 替换精确整词「CC Model」，**不得**触碰 cc-model / cc_model / ccmodel / com.ccmodel.app / CC_MODEL_CONFIG_DIR 字面量（❌ 模糊替换把配置目录引用改坏 / ✅ 改名范围检索「cc-model」「ccmodel」命中数与改前一致）。
 - 逐字红线：通知正文、菜单结构、「（默认）」徽标、欢迎窗正文中的行为描述句零改动（仅产品名词面替换）；通知正文（「已切换到〈name〉，对新建会话生效」等）不含产品名，不受影响。
-- 断言同步：仅 MenuBuilderTests 中钉住退出项 title 的断言更新为新逐字值；其余断言（MenuBuilderTests 改名断言之外的全部，共 142 条）零改动。
+- 断言同步：仅 MenuBuilderTests 第 25 行 `quit` fixture 的一处 title 字面量更新为新逐字值；该 fixture 被 7 个既有测试的期望数组引用（第 41/60/79/95/110/121/139 行），随 fixture 生效、测试代码本身零改动；其余 136 个测试零改动。
 - 打包脚本：APP_NAME 常量与 CFBundleName/CFBundleDisplayName 同步替换；CFBundleExecutable=ccmodel、CFBundleIdentifier=com.ccmodel.app 不变；产物路径含空格的引号包裹保持。
 - 环境注意：`swift test` 失败 → 重跑一次 → 仍败 `swift package reset; swift test`。
 
 **验收标准：**
 - 检索验收（限定改名范围 + 排除新值）：`grep -rnw 'CC Model' Sources Tests scripts README.md` 命中数为 0（`-w` 整词匹配保证不命中新值 CC Models；范围不含 docs/——archived 按 §3 第 4 条冻结，specs 为本规格自身文本，docs/superpowers/verification/ 登记册非显示面）。
-- swift test 全量通过（143 条，其中 MenuBuilderTests 退出项断言为新逐字值）。
+- swift test 全量通过（143 条，其中 MenuBuilderTests 退出项 fixture 的 title 为新逐字值）。
 - `bash scripts/make-app.sh` exit 0 且产物为 dist/CC Models.app，plutil -p dist/"CC Models.app"/Contents/Info.plist 显示 CFBundleName=CC Models。
 - README 无「CC Model」残留、无旧测试计数残留（README 计数应为 143，与本分支实际一致）。
 
@@ -53,7 +53,7 @@
 
 ## 4. 约束
 
-- 行为零变更红线：143 条测试中仅 MenuBuilderTests 改名断言同步更新，其余零改动全绿。
+- 行为零变更红线：143 条测试中仅 MenuBuilderTests 的 `quit` fixture 一处 title 字面量随改名更新（7 个测试的期望随之生效，测试逻辑零改动），其余零改动全绿。
 - 逐字红线范围（decisions.md 条目 2）：应用名文案随本需求更新；通知正文、「（默认）」徽标、菜单结构零改动。
 - 零新增依赖；macOS 13+。
 - 分支：`feature/rename-cc-models`。
@@ -76,4 +76,8 @@
 
 ## 附录：独立审读处置记录
 
-待审读。
+统一审读（独立子代理，2026-11-06）共三轮：
+
+1. 首轮：2 高、3 中、10 项低危；高/中项全部处置（A-1 mockups 与冻结禁令矛盾改为「不改文件、口径以 R1 为准」；其余按建议文本落实），低危批量处置。
+2. 复读：退回，新发现/残留 7 条（④⑫ 为声称已改而未落地）——已全部补齐，提交 `6a59ab6`。
+3. 复审：**通过**。剩余 2 条低危为记录精度问题，已修正：①「共 142 条」单位混用改为 fixture 口径（第 25 行 `quit` fixture 被 7 个测试引用、其余 136 个测试零改动）；② decisions.md 审读补注改为如实记载「裁决」栏枚举补全，「依据」栏未改。另顺手补 plan.md 边界条件枚举的 `cc_model`。
