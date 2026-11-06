@@ -51,5 +51,10 @@ struct WindowPresenterTests {
         WindowPresenter.prepare(window)
 
         #expect(visible.intersects(window.frame))
+        // 精度：窗口中心 ≈ 主屏可见范围中心（容差 1pt）——AppKit 对窗口坐标做
+        // 亚像素对齐（实测 visibleFrame.midY 为半点时 frame y 恒定取整，偏差恒
+        // 0.5pt），亚点中心在像素对齐约束下不可精确命中，1pt 内视为几何居中。
+        #expect(abs(window.frame.midX - visible.midX) < 1.0)
+        #expect(abs(window.frame.midY - visible.midY) < 1.0)
     }
 }
