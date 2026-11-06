@@ -309,4 +309,32 @@ struct ModelSwitcherTests {
             #expect(spy.callbacks == [unmatchedEnv])
         }
     }
+
+    // MARK: - 状态项标题刷新时序
+
+    @Test func menuNeedsUpdateRefreshesTitleAfterExternalEnvChange() throws {
+        try withTemporaryDirectory { dir in
+            let settingsDir = dir.appendingPathComponent("claude")
+            let (store, writer, switcher, _) = makeComponents(
+                storeDirectory: dir.appendingPathComponent("store"),
+                settingsDirectory: settingsDir
+            )
+            store.add(profile("智谱", env: zhipuEnv))
+            // settings.json 尚不存在 → env 为空，无法识别当前模型
+            let controller = StatusItemController(store: store, switcher: switcher, onCustomConfigDetected: { _ in })
+            var titles: [String] = []
+            controller.titleWriter = { titles.append($0) }
+
+            // 外部改动前的第一次开菜单：未知态标题
+            controller.menuNeedsUpdate(NSMenu())
+            #expect(titles == ["⇄ —"])
+
+            // 外部把 env 改为命中智谱（手改 settings.json / Claude Code 更新器写入）
+            try writer.replaceAnthropicEnv(with: zhipuEnv)
+
+            // 第二次开菜单：标题随菜单同周期刷新，不再显示旧状态（终审修复行为）
+            controller.menuNeedsUpdate(NSMenu())
+            #expect(titles == ["⇄ —", "⇄ 智谱"])
+        }
+    }
 }

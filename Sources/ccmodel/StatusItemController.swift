@@ -24,6 +24,10 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         DispatchQueue.main.async(execute: body)
     }
 
+    /// 标题写出器：nil 时写状态项按钮（生产路径）；测试注入记录器，
+    /// 在不创建 NSStatusItem 的前提下断言标题刷新时序与文案。
+    var titleWriter: ((String) -> Void)?
+
     init(
         store: ModelStore,
         switcher: ModelSwitcher,
@@ -50,13 +54,20 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     // MARK: - 标题
 
     private func refreshTitle() {
-        guard let button = statusItem?.button else { return }
         if let id = switcher.currentModelID(),
            let profile = store.configuration.models.first(where: { $0.id == id }) {
-            button.title = ProfileFields.statusItemTitle(displayName: profile.displayName)
+            applyTitle(ProfileFields.statusItemTitle(displayName: profile.displayName))
         } else {
-            button.title = Self.unknownTitle
+            applyTitle(Self.unknownTitle)
         }
+    }
+
+    private func applyTitle(_ title: String) {
+        if let titleWriter {
+            titleWriter(title)
+            return
+        }
+        statusItem?.button?.title = title
     }
 
     // MARK: - 菜单构建
@@ -67,6 +78,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     }
 
     private func rebuildMenu() {
+        // 标题与菜单同周期刷新：外部改 env（手改 settings.json、Claude Code 更新器写入）
+        // 后开菜单即如实反映，不再等到下一次应用内切换（终审修复，2026-11-06）。
+        refreshTitle()
         menu.removeAllItems()
         // readEnv 抛错 → currentModelID 为 nil → 菜单照常构建且 customConfig 置灰项显示。
         let currentID = switcher.currentModelID()
