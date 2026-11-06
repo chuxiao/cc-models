@@ -39,6 +39,8 @@ final class FirstRunCoordinator {
         )
         welcomeWindow = window
         NSApp.activate(ignoringOtherApps: true)
+        // 打开前归位主屏并居中（I-3 接线，Task 2）
+        WindowPresenter.prepare(window)
         window.makeKeyAndOrderFront(nil)
     }
 
@@ -52,6 +54,8 @@ final class FirstRunCoordinator {
         let window = FirstRunFormWindow(model: model, onSave: { [weak self] in self?.saveForm() })
         formWindow = window
         NSApp.activate(ignoringOtherApps: true)
+        // 打开前归位主屏并居中（I-3 接线，Task 2）
+        WindowPresenter.prepare(window)
         window.makeKeyAndOrderFront(nil)
     }
 
@@ -96,7 +100,8 @@ final class FirstRunCoordinator {
 
 // MARK: - 首跑表单窗
 
-/// 首跑表单窗：共享 `ProfileFormView` +「保存」按钮；无标准关闭按钮出口，仅「保存」路径。
+/// 首跑表单窗：共享 `ProfileFormView`（`hidesDefaultToggle: true`，无默认行）
+/// +「保 存」渐变主按钮；无标准关闭按钮出口，仅「保存」路径。
 private final class FirstRunFormWindow: NSWindow {
 
     init(model: ProfileFormModel, onSave: @escaping () -> Void) {
@@ -117,15 +122,21 @@ private struct FirstRunFormRoot: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ProfileFormView(model: model)
+            // 首跑单模型必然成为默认：不渲染「设为默认」行（I-4），保存仍自动默认
+            ProfileFormView(model: model, hidesDefaultToggle: true)
+                .padding(20)
+            Spacer(minLength: 0)
             Divider()
+                .overlay(UIPalette.hairline)
             HStack {
                 Spacer()
-                Button("保存", action: onSave)
+                Button("保 存", action: onSave)
                     .keyboardShortcut(.defaultAction)
+                    .buttonStyle(GradientPrimaryButtonStyle())
             }
             .padding(16)
         }
+        .background(UIPalette.windowCard)
         .frame(minWidth: 520, minHeight: 520)
     }
 }

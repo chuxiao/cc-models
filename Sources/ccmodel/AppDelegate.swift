@@ -77,10 +77,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: - 偏好窗口
 
     /// 打开偏好窗口；已存在时从 store 重新同步（reload）并前置复用同一窗口。
+    /// 首开与复用两条路径均在 makeKeyAndOrderFront 前经 `WindowPresenter.prepare`
+    /// 归位主屏并居中（I-3 偏好窗接线归属，Task 2）。
     private func showPreferences() {
         NSApp.activate(ignoringOtherApps: true)
         if let window = preferencesWindow {
             preferencesViewModel?.reload()
+            WindowPresenter.prepare(window)
             window.makeKeyAndOrderFront(nil)
             return
         }
@@ -88,6 +91,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let window = PreferencesWindow(viewModel: viewModel)
         preferencesViewModel = viewModel
         preferencesWindow = window
+        WindowPresenter.prepare(window)
         window.makeKeyAndOrderFront(nil)
     }
 
