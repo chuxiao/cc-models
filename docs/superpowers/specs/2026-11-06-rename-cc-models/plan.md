@@ -43,7 +43,7 @@
 - 检索验收（限定改名范围 + 排除新值）：`grep -rnw 'CC Model' Sources Tests scripts README.md | grep -v 'CC Model\.app'` 命中数为 0（`-w` 整词匹配保证不命中新值 CC Models；README 安装/卸载说明中对旧包的 2 处指称属有意保留；范围不含 docs/——archived 按 §3 第 4 条冻结，specs 为本规格自身文本，docs/superpowers/verification/ 登记册非显示面，其事实同步见终审修复）。
 - swift test 全量通过（143 条，其中 MenuBuilderTests 退出项 fixture 的 title 为新逐字值）。
 - `bash scripts/make-app.sh` exit 0 且产物为 dist/CC Models.app，plutil -p dist/"CC Models.app"/Contents/Info.plist 显示 CFBundleName=CC Models。
-- README 无「CC Model」残留、无旧测试计数残留（README 计数应为 143，与本分支实际一致）。
+- README 无「CC Model」残留（升级与卸载说明中对旧包的 2 处指称按本节首条检索口径排除）、无旧测试计数残留（README 计数应为 143，与本分支实际一致）。
 
 ## 3. 设计依据
 

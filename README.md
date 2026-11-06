@@ -27,7 +27,7 @@ swift run            # 运行：菜单栏出现箭头图标
 swift test           # 143 条单元测试
 ```
 
-> **已知构建怪癖**：冷启动时可能遇到宏插件报错（`TestingMacros` / `SwiftUIMacros` 相关，CLT 工具链问题）。处置：重跑一次；仍失败则 `swift package reset && swift test`（或 `swift build`）。
+> **已知构建怪癖**：冷启动时可能遇到宏插件报错（`TestingMacros` / `SwiftUIMacros` 相关，CLT 工具链问题）。处置：重跑一次；仍失败则 `swift package reset && swift test`（或 `swift build`）；继续不稳定时改用 `swift test -Xswiftc -plugin-path -Xswiftc /Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing`。
 
 ## 编译安装到系统
 
