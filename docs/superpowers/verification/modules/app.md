@@ -28,3 +28,8 @@ S9/S10 由 `swift test` 套件承载（资产：Tests/ccmodelTests/）；S11–S
 - APP-L3-020 | L3 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-05 | normal | 偏好窗 720×480/最小 660×430、密度松、四档横排四列
 - APP-L3-021 | L3 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-06 | normal | 首跑表单无默认行，保存后模型仍自动成为默认
 - APP-L3-022 | L3 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-07 | normal | 深色化后弹窗三出口行为与既有语义一致
+
+## bugfix 迭代（settings-slash-paste-menu）并入
+
+- APP-L1-023 | L1 | Tests/ccmodelTests（swift test） | normal | settings.json 写入不转义斜杠（URL 值原样可读，JSON 语义等价）
+- APP-L2-024 | L2 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md（人工：表单粘贴） | normal | 表单输入框 Cmd+V 粘贴有效（主菜单编辑装配回归）
