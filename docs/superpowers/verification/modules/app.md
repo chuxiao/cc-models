@@ -1,0 +1,20 @@
+# CC Model 场景登记册（modules/app.md）
+
+场景源头：docs/superpowers/specs/2026-11-04-cc-model/verification.md（已随 specs 归档至 docs/superpowers/archived/2026-11-04-cc-model/）。
+S9/S10 由 `swift test` 套件承载（资产：Tests/ccmodelTests/）；S11–S15 与 S1–S8 为人工清单（资产：归档验证方案的人工步骤），机器可操作部分由控制者执行、观察点由需求方确认。
+
+- APP-L3-001 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S1 | normal | 点菜单模型项 → env 键组精确替换、非 ANTHROPIC 内容保留、通知逐字、菜单重排置顶
+- APP-L3-002 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S2 | normal | 切换失败（损坏 JSON）→ 字节不变 + 失败通知逐字
+- APP-L3-003 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S3 | normal | 未命中 → 置灰自定义配置 → 弹窗纳入新模型（重名拦截不关闭）
+- APP-L3-004 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S4 | normal | 覆盖已有模型：env 整体替换、显示名/默认保持、成为当前
+- APP-L3-005 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S5 | normal | 取消后同 env 不再弹窗；env 变化后再次弹窗
+- APP-L3-006 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S6 | normal | 首跑：欢迎窗 → 预填 → 保存 → 常驻；退出出口零写入
+- APP-L3-007 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S7 | normal | 编辑生效中模型 → 立即应用 + 通知 + 不弹自定义配置
+- APP-L3-008 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S8 | normal | 删除守卫置灰 + 删默认首个补位
+- APP-L1-009 | L1 | Tests/ccmodelTests（swift test） | normal | _NAME 同步规则三例（派生跟随/自定义保留/清空双删）
+- APP-L1-010 | L1 | Tests/ccmodelTests（swift test） | normal | settings.json 四路径语义（替换保留/创建/损坏字节不变/只读前缀）
+- APP-L2-011 | L2 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S11 | normal | 通知授权被拒 → 静默降级、切换不受影响
+- APP-L2-012 | L2 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S12 | normal | 开机自启登记/注销/失败回拨（需 /Applications）
+- APP-L2-013 | L2 | scripts/make-app.sh | normal | 打包产物 lint/签名/启动状态项出现
+- APP-L3-014 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S14 | normal | 表单三类校验错误拦截且不落库
+- APP-L3-015 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S15 | normal | 新会话实际使用目标供应商（最终效果）
