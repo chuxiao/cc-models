@@ -136,12 +136,13 @@ enum ProfileFields {
         return errors
     }
 
-    /// 状态项标题：`⇄ ` 前缀加显示名；显示名超过 12 个字符时取前 12 字符追加省略号。
+    /// 状态项标题：纯显示名（⇄ 前缀由状态项图标图像承担，I-1）；显示名超过
+    /// 12 个字符时取前 12 字符追加省略号。
     static func statusItemTitle(displayName: String) -> String {
         if displayName.count > 12 {
-            return "⇄ " + String(displayName.prefix(12)) + "…"
+            return String(displayName.prefix(12)) + "…"
         }
-        return "⇄ " + displayName
+        return displayName
     }
 
     private static func isRequired(_ field: ProfileField) -> Bool {

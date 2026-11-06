@@ -65,6 +65,9 @@ final class ImportDialog {
         alert.buttons.last?.keyEquivalent = "\u{1b}" // Esc → 取消
         alert.window.initialFirstResponder = nameField
 
+        // runModal 前居中（I-3）：弹窗窗口中心 == 所在屏中心。
+        WindowPresenter.prepare(alert.window)
+
         NSApp.activate(ignoringOtherApps: true)
         while true {
             let response = alert.runModal()

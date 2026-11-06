@@ -1,12 +1,14 @@
 import AppKit
 
-/// 状态项与菜单装配（Task 5）：标题、menuNeedsUpdate 全量重建、点击分发与
-/// 自定义配置触发时机。NSStatusItem/NSMenu 装配不写单测，由 verification.md S1/S3 人工核对。
+/// 状态项与菜单装配（Task 5）：图标与标题（I-1/I-2）、menuNeedsUpdate 全量重建、
+/// 点击分发与自定义配置触发时机。NSStatusItem/NSMenu 装配不写单测，
+/// 由 verification.md S1/S3 人工核对。
 final class StatusItemController: NSObject, NSMenuDelegate {
 
     /// readEnv 失败（settings.json 损坏）或无法识别当前模型时的标题，
-    /// 由装配层直接设置、不经 statusItemTitle（控制者裁定，2026-11-05）。
-    private static let unknownTitle = "⇄ —"
+    /// 由装配层直接设置、不经 statusItemTitle（控制者裁定，2026-11-05）；
+    /// ⇄ 前缀由状态项图标图像承担后仅保留文字「—」（I-1）。
+    private static let unknownTitle = "—"
 
     private let store: ModelStore
     private let switcher: ModelSwitcher
@@ -28,6 +30,12 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     /// 在不创建 NSStatusItem 的前提下断言标题刷新时序与文案。
     var titleWriter: ((String) -> Void)?
 
+    /// 状态项图标供给缝（I-2）：默认解析系统符号「直线双向箭头」；返回 nil 时
+    /// 回退为无图像、仅文字标题（不崩溃，单测注入 nil 覆盖回退分支）。
+    var symbolProvider: () -> NSImage? = {
+        NSImage(systemSymbolName: "arrow.left.arrow.right", accessibilityDescription: nil)
+    }
+
     init(
         store: ModelStore,
         switcher: ModelSwitcher,
@@ -41,14 +49,28 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         super.init()
     }
 
-    /// 创建状态项并接线菜单；标题立即刷新一次。
+    /// 创建状态项并接线菜单；图标与标题立即装配一次。
     func start() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         menu.delegate = self
         menu.autoenablesItems = false
         item.menu = menu
         statusItem = item
+        applyIcon(to: item.button)
         refreshTitle()
+    }
+
+    /// 图标装配（I-2）：symbolProvider 结果设为按钮模板图，点阵尺寸适配状态栏
+    /// （约 16pt）。返回 nil → 提前返回，无图像、仅文字标题（不崩溃）；只设图像，
+    /// 不触碰标题——titleWriter 缝只管标题字符串，两者互不干扰。
+    /// 独立成方法使回退分支无需创建 NSStatusItem 即可单测。
+    func applyIcon(to button: NSButton?) {
+        guard let symbol = symbolProvider() else { return }
+        symbol.isTemplate = true
+        let side = NSStatusBar.system.thickness - 6
+        symbol.size = NSSize(width: side, height: side)
+        button?.image = symbol
+        button?.imagePosition = .imageLeading
     }
 
     // MARK: - 标题

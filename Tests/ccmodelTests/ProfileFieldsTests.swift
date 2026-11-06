@@ -206,14 +206,16 @@ struct ProfileFieldsTests {
 
     // MARK: - statusItemTitle(displayName:)
 
+    /// I-1 新语义：纯截断名（⇄ 前缀由状态项图标图像承担，不再出现在标题里）。
     @Test func statusItemTitleKeepsShortNameAsIs() {
-        #expect(ProfileFields.statusItemTitle(displayName: "abc") == "⇄ abc")
-        #expect(ProfileFields.statusItemTitle(displayName: "abcdefghijkl") == "⇄ abcdefghijkl")
+        #expect(ProfileFields.statusItemTitle(displayName: "智谱") == "智谱")
+        #expect(ProfileFields.statusItemTitle(displayName: "abcdefghijkl") == "abcdefghijkl")
+        #expect(!ProfileFields.statusItemTitle(displayName: "abc").hasPrefix("⇄ "))
     }
 
     @Test func statusItemTitleTruncatesLongNameToTwelveCharacters() {
-        #expect(ProfileFields.statusItemTitle(displayName: "abcdefghijklm") == "⇄ abcdefghijkl…")
-        #expect(ProfileFields.statusItemTitle(displayName: "abcdefghijklmn") == "⇄ abcdefghijkl…")
+        #expect(ProfileFields.statusItemTitle(displayName: "abcdefghijklm") == "abcdefghijkl…")
+        #expect(ProfileFields.statusItemTitle(displayName: "abcdefghijklmn") == "abcdefghijkl…")
     }
 
     // MARK: - ModelProfile

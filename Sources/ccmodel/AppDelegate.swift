@@ -17,6 +17,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var preferencesViewModel: PreferencesViewModel?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        // 全局固定深色外观：启动时一次性设置，三窗口 + 弹窗统一继承（UI 规格全局项）。
+        // 规格行文作 NSAppearance(named: .dark)；macOS AppKit 无 .dark（UIKit 常量），
+        // 对应常量为 .darkAqua，语义一致（固定深色外观）。
+        NSApp.appearance = NSAppearance(named: .darkAqua)
+
         do {
             try store.load()
         } catch {

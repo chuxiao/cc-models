@@ -325,16 +325,48 @@ struct ModelSwitcherTests {
             var titles: [String] = []
             controller.titleWriter = { titles.append($0) }
 
-            // 外部改动前的第一次开菜单：未知态标题
+            // 外部改动前的第一次开菜单：未知态标题（I-1：无 ⇄ 前缀）
             controller.menuNeedsUpdate(NSMenu())
-            #expect(titles == ["⇄ —"])
+            #expect(titles == ["—"])
 
             // 外部把 env 改为命中智谱（手改 settings.json / Claude Code 更新器写入）
             try writer.replaceAnthropicEnv(with: zhipuEnv)
 
             // 第二次开菜单：标题随菜单同周期刷新，不再显示旧状态（终审修复行为）
             controller.menuNeedsUpdate(NSMenu())
-            #expect(titles == ["⇄ —", "⇄ 智谱"])
+            #expect(titles == ["—", "智谱"])
+        }
+    }
+
+    // MARK: - 状态项图标装配（I-2）
+
+    /// symbolProvider 注入 nil：图标装配提前返回（无图像、仅文字标题路径），不崩溃；
+    /// 标题写出不受影响（titleWriter 缝只管标题字符串）。
+    @Test func nilSymbolProviderFallsBackToTextOnlyTitlePath() throws {
+        try withTemporaryDirectory { dir in
+            let (store, _, switcher, _) = makeComponents(
+                storeDirectory: dir.appendingPathComponent("store"),
+                settingsDirectory: dir.appendingPathComponent("claude")
+            )
+            store.add(profile("智谱", env: zhipuEnv))
+            try writeSettings(
+                dir.appendingPathComponent("claude"),
+                #"{"env": {"ANTHROPIC_BASE_URL": "https://open.bigmodel.cn/api/anthropic", "ANTHROPIC_AUTH_TOKEN": "z-token", "ANTHROPIC_MODEL": "glm-4.7"}}"#
+            )
+
+            let controller = StatusItemController(store: store, switcher: switcher, onCustomConfigDetected: { _ in })
+            controller.symbolProvider = { nil }
+
+            // 回退：装配后按钮无图像
+            let button = NSButton(frame: .zero)
+            controller.applyIcon(to: button)
+            #expect(button.image == nil)
+
+            // 纯文字标题路径照常（env 命中智谱 → 纯截断名，I-1）
+            var titles: [String] = []
+            controller.titleWriter = { titles.append($0) }
+            controller.menuNeedsUpdate(NSMenu())
+            #expect(titles == ["智谱"])
         }
     }
 }
