@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# make-app.sh — 构建 dist/CC Model.app（release 可执行 + Info.plist + ad-hoc 签名）
+# make-app.sh — 构建 dist/CC Models.app（release 可执行 + Info.plist + ad-hoc 签名）
 #
 # 用法：bash scripts/make-app.sh
 # 可重复运行：每次先删除旧 dist 再重建；任一步失败即以非零退出码结束。
@@ -7,7 +7,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(dirname "$SCRIPT_DIR")"
-APP_NAME="CC Model.app"
+APP_NAME="CC Models.app"
 APP_DIR="$REPO_ROOT/dist/$APP_NAME"
 EXECUTABLE_NAME="ccmodel"
 
@@ -33,9 +33,9 @@ cat > "$APP_DIR/Contents/Info.plist" <<'PLIST'
 <plist version="1.0">
 <dict>
     <key>CFBundleName</key>
-    <string>CC Model</string>
+    <string>CC Models</string>
     <key>CFBundleDisplayName</key>
-    <string>CC Model</string>
+    <string>CC Models</string>
     <key>CFBundleIdentifier</key>
     <string>com.ccmodel.app</string>
     <key>CFBundleExecutable</key>
@@ -71,4 +71,4 @@ if [ ! -f "$APP_DIR/Contents/Info.plist" ]; then
 fi
 
 echo "完成：dist/$APP_NAME"
-echo "提示：将 CC Model.app 放入 /Applications 以便登录项登记。"
+echo "提示：将 CC Models.app 放入 /Applications 以便登录项登记。"

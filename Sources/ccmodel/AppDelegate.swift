@@ -116,7 +116,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
         let alert = NSAlert()
         alert.alertStyle = .critical
-        alert.messageText = "CC Model 配置文件已损坏"
+        alert.messageText = "CC Models 配置文件已损坏"
         alert.informativeText = """
             无法读取应用配置文件：
             \(Self.configurationFileURL.path)

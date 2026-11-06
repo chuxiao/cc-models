@@ -55,7 +55,7 @@ enum MenuBuilder {
         items.append(contentsOf: modelItems)
         items.append(MenuItemSpec(kind: .separator, title: "", isSelected: false, isEnabled: false))
         items.append(MenuItemSpec(kind: .preferences, title: "偏好设置…", isSelected: false, isEnabled: true))
-        items.append(MenuItemSpec(kind: .quit, title: "退出 CC Model", isSelected: false, isEnabled: true))
+        items.append(MenuItemSpec(kind: .quit, title: "退出 CC Models", isSelected: false, isEnabled: true))
         return items
     }
 

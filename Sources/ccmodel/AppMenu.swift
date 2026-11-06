@@ -5,17 +5,17 @@ import AppKit
 /// 动作经响应链派发，无主菜单则所有文本框收不到粘贴等命令。
 enum AppMenu {
 
-    /// 最小主菜单：应用菜单（退出 CC Model，Cmd+Q）+ 编辑菜单
+    /// 最小主菜单：应用菜单（退出 CC Models，Cmd+Q）+ 编辑菜单
     /// （剪切 Cmd+X / 拷贝 Cmd+C / 粘贴 Cmd+V / 全选 Cmd+A）。
     /// 菜单项 target 为 nil：文本动作沿响应链到 first responder，terminate: 到 NSApplication。
     static func buildMainMenu() -> NSMenu {
         let mainMenu = NSMenu()
 
         let appItem = NSMenuItem()
-        appItem.title = "CC Model"
-        let appMenu = NSMenu(title: "CC Model")
+        appItem.title = "CC Models"
+        let appMenu = NSMenu(title: "CC Models")
         appMenu.addItem(NSMenuItem(
-            title: "退出 CC Model",
+            title: "退出 CC Models",
             action: #selector(NSApplication.terminate(_:)),
             keyEquivalent: "q"
         ))

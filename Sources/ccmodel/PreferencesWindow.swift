@@ -18,7 +18,7 @@ final class PreferencesWindow: NSWindow {
         )
         // 装配层长期强持有并重复 useKeyAndOrderFront，关闭仅隐去不释放
         isReleasedWhenClosed = false
-        title = "CC Model 设置"
+        title = "CC Models 设置"
         // 最小 660×430；contentMaxSize 不设（默认零值即无上限）
         contentMinSize = NSSize(width: 660, height: 430)
         contentView = NSHostingView(rootView: PreferencesRoot(viewModel: viewModel))

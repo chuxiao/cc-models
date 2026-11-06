@@ -19,7 +19,7 @@ final class WelcomeWindow: NSWindow {
             backing: .buffered,
             defer: false
         )
-        title = "欢迎使用 CC Model"
+        title = "欢迎使用 CC Models"
         contentView = NSHostingView(rootView: WelcomeView(
             hasExistingConfig: hasExistingConfig,
             onStart: onStart,
@@ -35,10 +35,10 @@ private struct WelcomeView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
-            Text("欢迎使用 CC Model")
+            Text("欢迎使用 CC Models")
                 .font(.title2.bold())
                 .foregroundColor(UIPalette.primaryText)
-            Text("在多个 Claude Code 模型配置之间一键切换。CC Model 通过改写 ~/.claude/settings.json 的 env 块来切换当前生效的模型。")
+            Text("在多个 Claude Code 模型配置之间一键切换。CC Models 通过改写 ~/.claude/settings.json 的 env 块来切换当前生效的模型。")
                 .foregroundColor(UIPalette.auxiliaryText)
             Text(hasExistingConfig
                  ? "已检测到现有 ANTHROPIC 配置，开始配置后将自动预填。"

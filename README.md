@@ -1,4 +1,4 @@
-# CC Model
+# CC Models
 
 macOS 菜单栏应用：一键切换 Claude Code 的 API 供应商（智谱 / DeepSeek / 任意 Anthropic 兼容接入点）。常驻菜单栏，点一下即完成切换，不影响已运行的会话。
 
@@ -35,13 +35,13 @@ swift test           # 143 条单元测试
 bash scripts/make-app.sh
 ```
 
-脚本做五件事：删旧 dist → release 构建 → 生成 Info.plist → 拷贝可执行 → ad-hoc 签名，产出 **`dist/CC Model.app`**（任一步失败即非零退出，不会产出半成品）。
+脚本做五件事：删旧 dist → release 构建 → 生成 Info.plist → 拷贝可执行 → ad-hoc 签名，产出 **`dist/CC Models.app`**（任一步失败即非零退出，不会产出半成品）。
 
 **安装步骤：**
 
 1. 运行上面的脚本
-2. 把 `dist/CC Model.app` 拖入 **/Applications**（Finder 拖拽或 `mv`）——登录项（开机自启）在标准位置注册最稳定
-3. 双击打开（本地构建无 quarantine 属性，Gatekeeper 不会拦；若从其他途径传输，先 `xattr -d com.apple.quarantine "CC Model.app"`）
+2. 把 `dist/CC Models.app` 拖入 **/Applications**（Finder 拖拽或 `mv`）——登录项（开机自启）在标准位置注册最稳定
+3. 双击打开（本地构建无 quarantine 属性，Gatekeeper 不会拦；若从其他途径传输，先 `xattr -d com.apple.quarantine "CC Models.app"`）
 4. 菜单栏出现箭头图标即安装完成
 
 > ad-hoc 签名仅本机有效——这个 app 不适合分发给别人（那是新需求，需另行设计签名与公证）。
@@ -55,7 +55,7 @@ bash scripts/make-app.sh
 | 删除模型 | 偏好设置… → 选中模型 → **－**（只剩一个时置灰不可删；删默认则首个自动补位） |
 | 设默认模型 | 表单里勾选「设为默认」→ 保存（菜单里该模型名后会带「（默认）」标注） |
 | 开机自启 | 偏好设置… → 侧栏底部「开机自启」开关 |
-| 退出 | 菜单 → 退出 CC Model |
+| 退出 | 菜单 → 退出 CC Models |
 
 **关键行为须知：**
 
@@ -67,8 +67,8 @@ bash scripts/make-app.sh
 ## 卸载
 
 1. 偏好设置… → 关闭「开机自启」
-2. 菜单 → 退出 CC Model
-3. 从 /Applications 删除 CC Model.app
+2. 菜单 → 退出 CC Models
+3. 从 /Applications 删除 CC Models.app
 4. （可选，彻底清理）删除配置目录 `~/Library/Application Support/cc-model/`；`~/.claude/settings.json` 保留当前值即可继续用 Claude Code
 
 ## 开发者

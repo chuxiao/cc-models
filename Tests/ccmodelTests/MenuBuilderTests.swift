@@ -22,7 +22,7 @@ struct MenuBuilderTests {
 
     private let separator = MenuItemSpec(kind: .separator, title: "", isSelected: false, isEnabled: false)
     private let preferences = MenuItemSpec(kind: .preferences, title: "偏好设置…", isSelected: false, isEnabled: true)
-    private let quit = MenuItemSpec(kind: .quit, title: "退出 CC Model", isSelected: false, isEnabled: true)
+    private let quit = MenuItemSpec(kind: .quit, title: "退出 CC Models", isSelected: false, isEnabled: true)
 
     @Test func regularMenuCurrentPinnedCheckedWithDefaultAnnotation() {
         let zhipu = profile("智谱", selectedAt: Date(timeIntervalSinceReferenceDate: 100))

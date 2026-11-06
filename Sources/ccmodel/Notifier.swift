@@ -67,7 +67,7 @@ final class Notifier: NSObject {
 
     private func deliver(_ text: String, to center: UNUserNotificationCenter) {
         let content = UNMutableNotificationContent()
-        content.title = "CC Model"
+        content.title = "CC Models"
         content.body = text
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         center.add(request)
