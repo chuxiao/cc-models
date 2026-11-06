@@ -16,12 +16,12 @@
 ## 2. 场景清单
 
 ### R1-01 显示面文案替换【自动化（全仓检索 + swift test）】
-- 步骤：全仓精确检索「CC Model」（词边界）——命中数应为 0；`swift test` 全量通过（MenuBuilderTests 退出项断言为新逐字值）。
+- 步骤：`grep -rnw 'CC Model' Sources Tests scripts README.md`（限定改名范围、-w 整词排除新值 CC Models）——命中数应为 0；`swift test` 全量通过（MenuBuilderTests 退出项断言为新逐字值）。
 - 期望：命中 0；143/143 通过。出处：design §R1、§5。
 
 ### R1-02 打包产物名【自动化（脚本验收）】
 - 步骤：`bash scripts/make-app.sh` → 检查产物路径与 plutil。
-- 期望：exit 0；产物 dist/CC Models.app；plutil -p 显示 CFBundleName=CC Models、CFBundleExecutable=ccmodel（不变）、CFBundleIdentifier=com.ccmodel.app（不变）。出处：design §R1、§3 第 1 条。
+- 期望：exit 0；产物 dist/CC Models.app；plutil -p dist/"CC Models.app"/Contents/Info.plist 显示 CFBundleName=CC Models、CFBundleExecutable=ccmodel（不变）、CFBundleIdentifier=com.ccmodel.app（不变）。出处：design §R1、§3 第 1 条。
 - 判据：全部命令按期望退出。
 
 ### R1-03 README【自动化（检索）】
@@ -29,9 +29,10 @@
 - 判据：检索命中 0。
 
 ### R1-04 运行时观察【人工——需求方自验】
-- 步骤：重新打包安装后启动应用。
-- 期望：退出菜单项「退出 CC Models」；偏好窗口标题「CC Models 设置」；欢迎窗「欢迎使用 CC Models」；切换通知标题「CC Models」；配置损坏弹窗（如触发）「CC Models 配置文件已损坏」。出处：design §R1、界面规格章。
-- 清理：无。
+- 步骤：(a) 打包并替换 /Applications 旧应用后启动：核对退出菜单项、偏好窗口标题、欢迎窗正文与标题、应用菜单标题；(b) 执行一次模型切换：核对通知标题；(c) 临时将 settings.json 置为非法内容并重启：核对损坏弹窗，核验后恢复原配置。
+- 期望：全部显示面产品名为「CC Models」——退出菜单项「退出 CC Models」；偏好窗口标题「CC Models 设置」；欢迎窗「欢迎使用 CC Models」；通知标题「CC Models」；损坏弹窗「CC Models 配置文件已损坏」。出处：design §R1、界面规格章。
+- **随改名副作用核对**：产物名变化使 /Applications 路径改变——既有开机自启登记随之失效，安装后在偏好中重新登记一次（decisions.md 改名范围裁决的已知代价）。出处：design §4 D1。
+- 清理：恢复原 settings.json。
 
 ## 3. 通过判据
 
@@ -50,7 +51,7 @@
 ## 6. 内容要求落实
 
 - 确定性固定策略：检索命中数为 0 的可判据；产物路径与 plutil 键值逐字。
-- 副作用隔离：无真实文件操作（打包产物为新增）。
+- 副作用隔离：自动化场景无真实文件操作；R1-04 涉及替换安装与临时破坏配置两处真实文件操作，核验后还原。
 - 失败证据采集：检索命中清单、swift test 输出、plutil 输出。
 
 **修复闭环轮次上限：3**。

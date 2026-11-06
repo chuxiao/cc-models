@@ -40,10 +40,10 @@
 - 环境注意：`swift test` 失败 → 重跑一次 → 仍败 `swift package reset; swift test`。
 
 **验收标准：**
-- 全仓检索「CC Model」（精确整词）命中数为 0（内部标识 cc-model/ccmodel/com.ccmodel.app 不在检索范围，grep 词边界核对）。
+- 检索验收（限定改名范围 + 排除新值）：`grep -rnw 'CC Model' Sources Tests scripts README.md` 命中数为 0（`-w` 整词匹配保证不命中新值 CC Models；范围不含 docs/——archived 按 §3 第 4 条冻结，specs 为本规格自身文本，docs/superpowers/verification/ 登记册非显示面）。
 - swift test 全量通过（143 条，其中 MenuBuilderTests 退出项断言为新逐字值）。
-- `bash scripts/make-app.sh` exit 0 且产物为 dist/CC Models.app，plutil -p 显示 CFBundleName=CC Models。
-- README 无「CC Model」残留、无 141/139 等旧计数复活。
+- `bash scripts/make-app.sh` exit 0 且产物为 dist/CC Models.app，plutil -p dist/"CC Models.app"/Contents/Info.plist 显示 CFBundleName=CC Models。
+- README 无「CC Model」残留、无旧测试计数残留（README 计数应为 143，与本分支实际一致）。
 
 ## 3. 设计依据
 
