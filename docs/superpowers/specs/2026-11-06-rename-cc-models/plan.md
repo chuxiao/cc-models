@@ -30,12 +30,12 @@
 **Interfaces:**
 - Consumes: 基线全部既有接口（零变更——只改字符串字面量与打包常量）。
 - Produces: 全部显示面呈现「CC Models」；`MenuBuilder` 退出项 title 新逐字值「退出 CC Models」；打包产物 dist/CC Models.app。
-- 调用示例：`bash scripts/make-app.sh` → `dist/CC Models.app` 存在且 `plutil -p` 显示 CFBundleName=CC Models。
+- 调用示例：`bash scripts/make-app.sh` → `dist/CC Models.app` 存在且 `plutil -p dist/"CC Models.app"/Contents/Info.plist` 显示 CFBundleName=CC Models。
 
 **边界条件：**
-- 替换精确整词「CC Model」，**不得**触碰 cc-model / ccmodel / com.ccmodel.app 字面量（❌ 模糊替换把配置目录引用改坏 / ✅ 全仓检索「cc-model」「ccmodel」命中数与改前一致）。
+- 替换精确整词「CC Model」，**不得**触碰 cc-model / ccmodel / com.ccmodel.app / CC_MODEL_CONFIG_DIR 字面量（❌ 模糊替换把配置目录引用改坏 / ✅ 改名范围检索「cc-model」「ccmodel」命中数与改前一致）。
 - 逐字红线：通知正文、菜单结构、「（默认）」徽标、欢迎窗正文中的行为描述句零改动（仅产品名词面替换）；通知正文（「已切换到〈name〉，对新建会话生效」等）不含产品名，不受影响。
-- 断言同步：仅 MenuBuilderTests 中钉住退出项 title 的断言更新为新逐字值；其余 143 条断言零改动。
+- 断言同步：仅 MenuBuilderTests 中钉住退出项 title 的断言更新为新逐字值；其余断言（MenuBuilderTests 改名断言之外的全部，共 142 条）零改动。
 - 打包脚本：APP_NAME 常量与 CFBundleName/CFBundleDisplayName 同步替换；CFBundleExecutable=ccmodel、CFBundleIdentifier=com.ccmodel.app 不变；产物路径含空格的引号包裹保持。
 - 环境注意：`swift test` 失败 → 重跑一次 → 仍败 `swift package reset; swift test`。
 
@@ -62,13 +62,13 @@
 
 | 风险 | 触发条件 | 影响 | 缓解方式 |
 |------|---------|------|---------|
-| 模糊替换误伤内部标识 | 替换实现不精确（子串匹配） | 配置目录引用/构建标识坏，打包失败 | 精确整词替换 + 全仓检索验收 |
-| 显示面触点遗漏 | 扫描不全 | 部分界面仍显示旧名 | 全仓检索验收（「CC Model」命中数为 0） |
+| 模糊替换误伤内部标识 | 替换实现不精确（子串匹配） | 配置目录引用/构建标识坏，打包失败 | 精确整词替换 + 改名范围检索验收 |
+| 显示面触点遗漏 | 扫描不全 | 部分界面仍显示旧名 | 改名范围检索验收（「CC Model」命中数为 0） |
 | 打包脚本三处不同步 | 只改 APP_NAME 漏 plist 槽位 | 产物显示名与应用名不一致 | 同一提交内三处同步 + plutil -p 验收 |
 
 ## 执行交接
 
-- **建议执行方式：会话内执行。** 理由：单任务机械替换、验收标准完全可判（全仓检索 + 测试 + 打包产物检查），派发子代理的上下文成本超过收益。
+- **建议执行方式：会话内执行。** 理由：单任务机械替换、验收标准完全可判（改名范围检索 + 测试 + 打包产物检查），派发子代理的上下文成本超过收益。
 - 必需子技能：会话内执行用 `superpowers:executing-plans`。
 - 请需求方审查：改名范围（显示面全改、内部标识不动）与「明确不做」四条。
 - 明确确认后才进入实施。

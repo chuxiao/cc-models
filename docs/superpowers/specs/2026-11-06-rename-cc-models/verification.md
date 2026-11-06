@@ -15,7 +15,7 @@
 
 ## 2. 场景清单
 
-### R1-01 显示面文案替换【自动化（全仓检索 + swift test）】
+### R1-01 显示面文案替换【自动化（改名范围检索 + swift test）】
 - 步骤：`grep -rnw 'CC Model' Sources Tests scripts README.md`（限定改名范围、-w 整词排除新值 CC Models）——命中数应为 0；`swift test` 全量通过（MenuBuilderTests 退出项断言为新逐字值）。
 - 期望：命中 0；143/143 通过。出处：design §R1、§5。
 
@@ -25,7 +25,7 @@
 - 判据：全部命令按期望退出。
 
 ### R1-03 README【自动化（检索）】
-- 期望：无「CC Model」残留；无旧测试计数（139/141）复活。出处：design §R1。
+- 期望：无「CC Model」残留；无旧测试计数残留（README 计数应为 143，与本分支实际一致）。出处：design §R1。
 - 判据：检索命中 0。
 
 ### R1-04 运行时观察【人工——需求方自验】
