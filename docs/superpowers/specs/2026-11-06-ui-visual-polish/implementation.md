@@ -100,7 +100,7 @@
 
 ## 5. 界面实现规格（视觉规格唯一权威值）
 
-**全局**：`NSApp.appearance = NSAppearance(named: .dark)`（启动时一次性设置，三窗口+弹窗统一继承深色）。
+**全局**：`NSApp.appearance = NSAppearance(named: .darkAqua)`（启动时一次性设置，三窗口+弹窗统一继承深色；AppKit 深色常量为 `.darkAqua`）。
 
 **色值表**（冻结稿 mockups/preferences.html 为准，实现取值如下）：
 
