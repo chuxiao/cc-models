@@ -18,3 +18,13 @@ S9/S10 由 `swift test` 套件承载（资产：Tests/ccmodelTests/）；S11–S
 - APP-L2-013 | L2 | scripts/make-app.sh | normal | 打包产物 lint/签名/启动状态项出现
 - APP-L3-014 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S14 | normal | 表单三类校验错误拦截且不落库
 - APP-L3-015 | L3 | docs/superpowers/archived/2026-11-04-cc-model/verification.md#S15 | normal | 新会话实际使用目标供应商（最终效果）
+
+## UI 视觉优化迭代（2026-11-06-ui-visual-polish）并入
+
+- APP-L1-016 | L1 | Tests/ccmodelTests（swift test） | normal | 状态项标题新语义断言与全部既有回归通过（原方案 V-01/V-08）
+- APP-L2-017 | L2 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-02 | normal | 状态项箭头图标+纯名标题，明暗菜单栏均清晰
+- APP-L3-018 | L3 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-03 | normal | 三窗+弹窗深色主题一致，深色下校验提示与密文点可辨
+- APP-L3-019 | L3 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-04 | normal | 四个业务窗口/弹窗打开均居中主屏
+- APP-L3-020 | L3 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-05 | normal | 偏好窗 720×480/最小 660×430、密度松、四档横排四列
+- APP-L3-021 | L3 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-06 | normal | 首跑表单无默认行，保存后模型仍自动成为默认
+- APP-L3-022 | L3 | docs/superpowers/archived/2026-11-06-ui-visual-polish/verification.md#V-07 | normal | 深色化后弹窗三出口行为与既有语义一致
